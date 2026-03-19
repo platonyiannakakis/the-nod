@@ -24,7 +24,7 @@
             correct: '#2D9E5F',
             wrong:   '#D94F4F',
           },
-          fontFamily: { sans: ['Cormorant Garamond', 'Georgia', 'serif'] },
+          fontFamily: { sans: ['Cormorant Garamond', 'Georgia', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'] },
           borderRadius: {
             card: '20px',
             btn:  '14px',
@@ -55,7 +55,7 @@
 
   <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-    html, body { background: #EBEBEB; margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; -webkit-font-smoothing: antialiased; }
+    html, body { background: #EBEBEB; margin: 0; font-family: 'Cormorant Garamond', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'; -webkit-font-smoothing: antialiased; }
     #root { min-height: 100dvh; display: flex; justify-content: center; align-items: stretch; }
 
     .btn-primary {
@@ -120,9 +120,9 @@
   <script type="text/babel">
     const { useState, useEffect, useCallback } = React
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-    // CONFIGURATION ‚Äî paste your Supabase credentials here
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
+    // CONFIGURATION — paste your Supabase credentials here
+    // ══════════════════════════════════════════════════════════════════════════
     const SUPABASE_URL = 'https://iruynozvvheszovfqkqu.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydXlub3p2dmhlc3pvdmZxa3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzcyMjMsImV4cCI6MjA4OTUxMzIyM30.IEVOcGV0PJEmZaKYJv667ZmIum6ILK3aIZBsYrniYkg'
 
@@ -130,9 +130,9 @@
       ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
       : null
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // CONSTANTS
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     const QUESTIONS_PER_GAME = 10
     const PTS_CORRECT        = 10
     const STREAK_BONUS_AT    = 3
@@ -140,23 +140,23 @@
 
     const DEPARTMENTS = ['Agile', 'Post-Production', 'Design']
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-    // FALLBACK TERMS ‚Äî used when Supabase is not configured
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
+    // FALLBACK TERMS — used when Supabase is not configured
+    // ══════════════════════════════════════════════════════════════════════════
     const FALLBACK_TERMS = [
-      // ‚îÄ‚îÄ AGILE ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+      // ── AGILE ──────────────────────────────────────────────────────────────
       { id:'a1', term:'Sprint', department:'Agile',
         cloze: "The team committed to shipping the redesigned homepage within the next _____, a two-week cycle starting Monday.",
         options: ['Sprint', 'Backlog', 'Standup', 'Retrospective'],
         correct_index: 0,
-        explanation: 'A Sprint is a time-boxed period ‚Äî typically 1‚Äì2 weeks ‚Äî where the team commits to completing a defined set of tasks. At the end, they review what was built and plan the next one.' },
+        explanation: 'A Sprint is a time-boxed period — typically 1–2 weeks — where the team commits to completing a defined set of tasks. At the end, they review what was built and plan the next one.' },
       { id:'a2', term:'Backlog', department:'Agile',
         cloze: "Before planning began, the product owner sorted the _____ and moved the checkout bug all the way to the top.",
         options: ['Velocity', 'Backlog', 'Story Points', 'Sprint'],
         correct_index: 1,
         explanation: 'The backlog is the master list of features, bug fixes, and tasks ordered by priority. The product owner decides what goes to the top.' },
       { id:'a3', term:'Velocity', department:'Agile',
-        cloze: "After three sprints of data, the team\'s _____ averaged 34 points ‚Äî enough to forecast the launch date with confidence.",
+        cloze: "After three sprints of data, the team\'s _____ averaged 34 points — enough to forecast the launch date with confidence.",
         options: ['Story Points', 'Sprint', 'Velocity', 'Standup'],
         correct_index: 2,
         explanation: 'Velocity is how much work a team finishes in a sprint, measured in story points. Tracking it over time helps predict how much the team can commit to in future sprints.' },
@@ -174,10 +174,10 @@
         cloze: "The engineer estimated the new search feature at eight _____, accounting for the API complexity and edge cases.",
         options: ['Story Points', 'Velocity', 'Sprint', 'Standup'],
         correct_index: 0,
-        explanation: 'Story points estimate relative effort ‚Äî not hours. Teams use scales like Fibonacci (1, 2, 3, 5, 8) based on complexity and uncertainty.' },
-      // ‚îÄ‚îÄ POST-PRODUCTION ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+        explanation: 'Story points estimate relative effort — not hours. Teams use scales like Fibonacci (1, 2, 3, 5, 8) based on complexity and uncertainty.' },
+      // ── POST-PRODUCTION ────────────────────────────────────────────────────
       { id:'p1', term:'Rough Cut', department:'Post-Production',
-        cloze: "The director sat down to review the _____ ‚Äî a first assembly of all the clips in sequence, without colour or sound polish.",
+        cloze: "The director sat down to review the _____ — a first assembly of all the clips in sequence, without colour or sound polish.",
         options: ['Colour Grade', 'Rough Cut', 'Timecode', 'B-Roll'],
         correct_index: 1,
         explanation: 'The rough cut is the first full assembly. Clips are in sequence but transitions, colour, and sound aren\'t polished. It\'s used to check structure and pacing.' },
@@ -185,38 +185,38 @@
         cloze: "Once the edit was locked, the colourist began the _____, giving the film its signature warm, golden look.",
         options: ['Rough Cut', 'VFX', 'Foley', 'Colour Grade'],
         correct_index: 3,
-        explanation: 'Colour grading defines the visual mood of a film. Editors adjust exposure, contrast, and hue to create a consistent aesthetic ‚Äî warm tones for drama, cold blues for thrillers.' },
+        explanation: 'Colour grading defines the visual mood of a film. Editors adjust exposure, contrast, and hue to create a consistent aesthetic — warm tones for drama, cold blues for thrillers.' },
       { id:'p3', term:'B-Roll', department:'Post-Production',
         cloze: "The interview felt flat on its own, so the editor cut in _____ of the city streets and the product being used.",
         options: ['B-Roll', 'Foley', 'Timecode', 'VFX'],
         correct_index: 0,
-        explanation: 'B-roll is all the supporting footage ‚Äî city streets, product close-ups, hands typing ‚Äî cut over interviews to keep visuals interesting and illustrate what\'s being said.' },
+        explanation: 'B-roll is all the supporting footage — city streets, product close-ups, hands typing — cut over interviews to keep visuals interesting and illustrate what\'s being said.' },
       { id:'p4', term:'Foley', department:'Post-Production',
         cloze: "The footsteps in the recording were too quiet, so a _____ artist re-recorded them on a wooden floor to match the picture.",
         options: ['VFX', 'Timecode', 'Foley', 'Rough Cut'],
         correct_index: 2,
-        explanation: 'Foley artists recreate everyday sounds ‚Äî footsteps, rustling fabric, creaking doors ‚Äî in a studio, in sync with the picture, to add texture to the audio mix.' },
+        explanation: 'Foley artists recreate everyday sounds — footsteps, rustling fabric, creaking doors — in a studio, in sync with the picture, to add texture to the audio mix.' },
       { id:'p5', term:'Timecode', department:'Post-Production',
         cloze: "The editor asked the client to reference the _____ when leaving notes, so they could pinpoint the exact frame they meant.",
         options: ['Colour Grade', 'Timecode', 'B-Roll', 'Rough Cut'],
         correct_index: 1,
-        explanation: 'Timecode (HH:MM:SS:FF) is stamped on every frame. It lets editors and clients reference exact moments ‚Äî "cut at 01:22:14:08" ‚Äî with frame-level precision.' },
+        explanation: 'Timecode (HH:MM:SS:FF) is stamped on every frame. It lets editors and clients reference exact moments — "cut at 01:22:14:08" — with frame-level precision.' },
       { id:'p6', term:'VFX', department:'Post-Production',
         cloze: "The explosion on set was too small, so the _____ team extended it digitally in post to fill the entire frame.",
         options: ['Foley', 'Timecode', 'Rough Cut', 'VFX'],
         correct_index: 3,
-        explanation: 'VFX are digital elements added after filming ‚Äî CGI, compositing, environment extensions. Unlike practical SFX (on-set), VFX happen entirely in post-production.' },
-      // ‚îÄ‚îÄ DESIGN ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+        explanation: 'VFX are digital elements added after filming — CGI, compositing, environment extensions. Unlike practical SFX (on-set), VFX happen entirely in post-production.' },
+      // ── DESIGN ─────────────────────────────────────────────────────────────
       { id:'d1', term:'Kerning', department:'Design',
         cloze: "The logo looked slightly off until the designer adjusted the _____ between the 'A' and 'V', closing the awkward gap.",
         options: ['Kerning', 'Bleed', 'Visual Hierarchy', 'Wireframe'],
         correct_index: 0,
-        explanation: 'Kerning fine-tunes the space between two specific letters. Poor kerning looks uneven; good kerning is invisible ‚Äî it just feels right, especially in headlines and logos.' },
+        explanation: 'Kerning fine-tunes the space between two specific letters. Poor kerning looks uneven; good kerning is invisible — it just feels right, especially in headlines and logos.' },
       { id:'d2', term:'Wireframe', department:'Design',
         cloze: "Before adding any colour or imagery, the UX team shared a _____ showing exactly where each button and text block would sit.",
         options: ['Pantone', 'Gestalt', 'Wireframe', 'Bleed'],
         correct_index: 2,
-        explanation: 'A wireframe is a greyscale layout showing where elements will go ‚Äî without colours or imagery. It helps teams agree on structure and flow before visual design begins.' },
+        explanation: 'A wireframe is a greyscale layout showing where elements will go — without colours or imagery. It helps teams agree on structure and flow before visual design begins.' },
       { id:'d3', term:'Bleed', department:'Design',
         cloze: "The printer warned that without a 3mm _____, a white border would appear along the edge once the pages were trimmed.",
         options: ['Kerning', 'Bleed', 'Pantone', 'Visual Hierarchy'],
@@ -231,7 +231,7 @@
         cloze: "Using _____ principles, the designer grouped related options visually so users could scan the form without reading every label.",
         options: ['Bleed', 'Visual Hierarchy', 'Wireframe', 'Gestalt'],
         correct_index: 3,
-        explanation: 'Gestalt principles ‚Äî proximity, similarity, closure, continuity ‚Äî explain how the eye naturally organises elements into groups. Designers use them to create intuitive, cohesive layouts.' },
+        explanation: 'Gestalt principles — proximity, similarity, closure, continuity — explain how the eye naturally organises elements into groups. Designers use them to create intuitive, cohesive layouts.' },
       { id:'d6', term:'Visual Hierarchy', department:'Design',
         cloze: "By making the headline three times larger than the body copy, she created a clear _____ that guided the reader\'s eye to the key message.",
         options: ['Visual Hierarchy', 'Gestalt', 'Kerning', 'Wireframe'],
@@ -239,9 +239,9 @@
         explanation: 'Visual hierarchy uses size, weight, colour, and position to control where your eye goes first. Good hierarchy means viewers absorb the most important info naturally.' },
     ]
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // HELPERS
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     function shuffle(arr) {
       const a = [...arr]
       for (let i = a.length - 1; i > 0; i--) {
@@ -251,7 +251,7 @@
       return a
     }
 
-    // ‚îÄ‚îÄ Supabase helpers ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+    // ── Supabase helpers ──────────────────────────────────────────────────────
     async function dbFetchTerms() {
       if (!db) return null
       const { data, error } = await db.from('terms').select('*')
@@ -299,9 +299,9 @@
       return () => db.removeChannel(ch)
     }
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: START
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     function StartScreen({ onStart, loading }) {
       const [name, setName] = useState('')
       const [dept, setDept] = useState(null)
@@ -327,10 +327,10 @@
       }
 
       return (
-        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-16 pb-8 w-full max-w-[420px]">
+        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-10 pb-8 w-full max-w-[420px]">
 
           {/* Hero */}
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="pt-2">
             <p className="text-[11px] font-semibold tracking-widest uppercase text-muted mb-6">
               Navigation of Disciplines
             </p>
@@ -338,19 +338,8 @@
               The<br/>NOD
             </h1>
             <p className="text-base font-light text-muted leading-relaxed max-w-[260px] mt-2">
-              Do you actually understand your colleagues ‚Äî or are you just nodding?
+              Do you actually understand your colleagues, or are you just nodding?
             </p>
-
-            <div className="mt-10 space-y-3 text-sm text-muted font-light">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">üî•</span>
-                <span>Streak bonuses for consecutive answers</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">üèÜ</span>
-                <span>Live company-wide leaderboard</span>
-              </div>
-            </div>
           </div>
 
           {/* Form card */}
@@ -362,7 +351,7 @@
                 {returning && (
                   <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
                     <p className="text-sm font-medium text-ink">
-                      Welcome back, {name} üëã
+                      Welcome back, {name} 👋
                     </p>
                     <button
                       type="button"
@@ -374,10 +363,10 @@
                   </div>
                 )}
 
-                {/* Name */}
+                {/* Username */}
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your name
+                    Your username
                   </label>
                   <input
                     type="text"
@@ -399,17 +388,29 @@
                 disabled={!canSubmit}
                 className="btn-primary w-full py-4"
               >
-                {loading ? 'Loading‚Ä¶' : "Let's play"}
+                {loading ? 'Loading…' : "Let's play"}
               </button>
             </form>
+          </div>
+
+          {/* Features */}
+          <div className="mt-6 space-y-3 text-sm text-muted font-light">
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
+              <span>Streak bonuses for consecutive answers</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
+              <span>Live company-wide leaderboard</span>
+            </div>
           </div>
         </div>
       )
     }
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: CHALLENGE CARD
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     function ClozeText({ cloze }) {
       const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
       return (
@@ -422,8 +423,9 @@
               fontWeight: 600,
               letterSpacing: '0.15em',
               margin: '0 2px',
+              whiteSpace: 'nowrap',
             }}
-          >. . . . . . .</span>
+          >. . . . .</span>
           {parts[1]}
         </p>
       )
@@ -442,7 +444,7 @@
             </span>
             <div className="flex items-center gap-3">
               {streak >= 2 && (
-                <span className="text-sm font-semibold" style={{color:'#F5B800'}}>üî• {streak}</span>
+                <span className="text-sm font-semibold" style={{color:'#F5B800'}}>🔥 {streak}</span>
               )}
               <span className="text-sm font-semibold text-ink tabular-nums">{score} pts</span>
             </div>
@@ -471,7 +473,7 @@
               <ClozeText cloze={question.cloze} />
             </div>
 
-            {/* Options ‚Äî term names */}
+            {/* Options — term names */}
             <div className="space-y-2.5 pb-8">
               {question.options.map((opt, i) => (
                 <button
@@ -493,9 +495,9 @@
       )
     }
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: FEEDBACK
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     function ClozeReveal({ cloze, term, isCorrect }) {
       const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
       const color = isCorrect ? '#2D9E5F' : '#D94F4F'
@@ -529,12 +531,12 @@
           <div className="px-5 pt-12 pb-4">
             <div className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-pill
               ${isCorrect ? 'bg-correct text-white' : 'bg-wrong text-white'}`}>
-              <span className="font-bold text-base">{isCorrect ? '‚úì' : '‚úó'}</span>
+              <span className="font-bold text-base">{isCorrect ? '✓' : '✗'}</span>
               <span className="font-semibold text-sm">
                 {isCorrect ? 'Correct!' : 'Not quite.'}
               </span>
               {isCorrect && streak >= 2 && (
-                <span className="text-white/80 text-xs ml-1">üî• {streak}-streak</span>
+                <span className="text-white/80 text-xs ml-1">🔥 {streak}-streak</span>
               )}
             </div>
           </div>
@@ -556,7 +558,7 @@
                 </p>
               )}
 
-              {/* Options recap ‚Äî subtle */}
+              {/* Options recap — subtle */}
               <div className="mt-5 pt-4 border-t border-field space-y-1.5">
                 {question.options.map((opt, i) => {
                   const isRight    = i === question.correct_index
@@ -565,7 +567,7 @@
                   return (
                     <div key={i} className={`flex items-center gap-2 text-sm
                       ${isRight ? 'text-correct' : 'text-wrong'}`}>
-                      <span className="font-bold">{isRight ? '‚úì' : '‚úó'}</span>
+                      <span className="font-bold">{isRight ? '✓' : '✗'}</span>
                       <span className="font-medium" style={{fontStyle:'italic'}}>{opt}</span>
                     </div>
                   )
@@ -589,17 +591,17 @@
       )
     }
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: SUMMARY
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     function SummaryScreen({ playerName, playerDept, score, totalQuestions, maxStreak, onLeaderboard, onPlayAgain }) {
       const correct  = Math.round(score / PTS_CORRECT)
       const accuracy = Math.round((correct / totalQuestions) * 100)
 
-      const { emoji, msg } = accuracy >= 90 ? { emoji:'üèÜ', msg:"You're genuinely cross-functional." }
-                           : accuracy >= 70 ? { emoji:'üí™', msg:"Solid. A few gaps, but you're getting there." }
-                           : accuracy >= 50 ? { emoji:'ü§î', msg:'Some nodding happening. Keep playing.' }
-                           :                  { emoji:'üò¨', msg:"Classic NOD energy. That's what this is for." }
+      const { emoji, msg } = accuracy >= 90 ? { emoji:'🏆', msg:"You're genuinely cross-functional." }
+                           : accuracy >= 70 ? { emoji:'💪', msg:"Solid. A few gaps, but you're getting there." }
+                           : accuracy >= 50 ? { emoji:'🤔', msg:'Some nodding happening. Keep playing.' }
+                           :                  { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
 
       return (
         <div className="flex flex-col min-h-dvh bg-bg px-5 pt-14 pb-8 w-full max-w-[420px] animate-slide-up">
@@ -648,10 +650,10 @@
       )
     }
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+    // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: LEADERBOARD
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-    const MEDALS = ['ü•á','ü•à','ü•â']
+    // ══════════════════════════════════════════════════════════════════════════
+    const MEDALS = ['🥇','🥈','🥉']
 
     function Leaderboard({ playerId, playerName, onPlayAgain }) {
       const [leaders, setLeaders] = useState([])
@@ -686,9 +688,9 @@
           {/* List */}
           <div className="flex-1 px-5 overflow-y-auto">
             {loading ? (
-              <p className="text-center py-16 text-sm font-light text-muted">Loading‚Ä¶</p>
+              <p className="text-center py-16 text-sm font-light text-muted">Loading…</p>
             ) : leaders.length === 0 ? (
-              <p className="text-center py-16 text-sm font-light text-muted">No scores yet ‚Äî be the first!</p>
+              <p className="text-center py-16 text-sm font-light text-muted">No scores yet — be the first!</p>
             ) : (
               <div className="space-y-2 pb-4">
                 {leaders.map((p, i) => {
@@ -710,7 +712,7 @@
                           {isMe && <span className="ml-1.5 text-xs font-light text-muted">(you)</span>}
                         </p>
                         <p className="text-[10px] font-light text-muted mt-0.5">
-                          {p.games_played} game{p.games_played !== 1 ? 's' : ''} ¬∑ best streak {p.max_streak}
+                          {p.games_played} game{p.games_played !== 1 ? 's' : ''} · best streak {p.max_streak}
                         </p>
                       </div>
                       <p className="text-xl font-semibold text-ink tabular-nums shrink-0">
@@ -735,10 +737,10 @@
       )
     }
 
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-    // APP ‚Äî state machine
-    // ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-    // ‚îÄ‚îÄ Preview mock data (for Figma import via URL hash) ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+    // ══════════════════════════════════════════════════════════════════════════
+    // APP — state machine
+    // ══════════════════════════════════════════════════════════════════════════
+    // ── Preview mock data (for Figma import via URL hash) ──────────────────────
     const PREVIEW_QUESTION = {
       term: 'Bleed', department: 'Design',
       sentence: 'The printer warned that without a 3mm . . . . . . . , a white border would appear along the edge once the pages were trimmed.',
@@ -773,7 +775,7 @@
       const [maxStreak,      setMaxStreak]      = useState(preview ? 3 : 0)
       const [loading,        setLoading]        = useState(false)
 
-      // ‚îÄ‚îÄ Start ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+      // ── Start ──────────────────────────────────────────────────────────────
       const startGame = useCallback(async (name, dept) => {
         setLoading(true)
         setPlayerName(name)
@@ -784,7 +786,7 @@
         const picked   = shuffle(allTerms).slice(0, QUESTIONS_PER_GAME)
         setQuestions(picked)
 
-        // Resolve player ‚Äî reuse stored ID if name matches, otherwise upsert
+        // Resolve player — reuse stored ID if name matches, otherwise upsert
         let resolvedId = null
         try {
           const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
@@ -815,7 +817,7 @@
         setScreen('playing')
       }, [])
 
-      // ‚îÄ‚îÄ Answer ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+      // ── Answer ─────────────────────────────────────────────────────────────
       const handleAnswer = useCallback((answerIndex) => {
         const q       = questions[currentIndex]
         const correct = answerIndex === q.correct_index
@@ -836,7 +838,7 @@
         setScreen('feedback')
       }, [questions, currentIndex, streak])
 
-      // ‚îÄ‚îÄ Next ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+      // ── Next ───────────────────────────────────────────────────────────────
       const handleNext = useCallback(async () => {
         const next = currentIndex + 1
         if (next >= questions.length) {
@@ -850,7 +852,7 @@
         }
       }, [currentIndex, questions.length, playerId, score, maxStreak])
 
-      // ‚îÄ‚îÄ Play again ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+      // ── Play again ─────────────────────────────────────────────────────────
       const playAgain = useCallback(() => startGame(playerName, playerDept), [startGame, playerName, playerDept])
 
       const q = questions[currentIndex]
@@ -866,7 +868,7 @@
       )
     }
 
-    // ‚îÄ‚îÄ Mount ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ
+    // ── Mount ──────────────────────────────────────────────────────────────────
     const root = ReactDOM.createRoot(document.getElementById('root'))
     root.render(<App />)
   </script>
