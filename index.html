@@ -103,6 +103,9 @@
     input:focus { outline: none; }
     input::placeholder { color: #BEBDBA; }
 
+    .brand-wordmark { font-style: italic; }
+    .player-name-input { border: none; }
+
     ::-webkit-scrollbar { display: none; }
   </style>
 </head>
@@ -139,6 +142,11 @@
     const STREAK_BONUS       = 5
 
     const DEPARTMENTS = ['Agile', 'Post-Production', 'Design']
+    const DEPARTMENT_RIVALS = {
+      Agile: ['Post-Production', 'Design'],
+      'Post-Production': ['Agile', 'Design'],
+      Design: ['Agile', 'Post-Production'],
+    }
 
     // ══════════════════════════════════════════════════════════════════════════
     // FALLBACK TERMS — used when Supabase is not configured
@@ -263,19 +271,36 @@
       if (!db) return null
       const { data: existing } = await db.from('players').select('*').ilike('name', name).limit(1).single()
       if (existing) return existing
-      const { data, error } = await db.from('players').insert({ name }).select().single()
+      const { data, error } = await db.from('players').insert({
+        name,
+        score: 0,
+        max_streak: 0,
+        games_played: 0,
+      }).select().single()
       if (error) { console.error('[NOD] upsertPlayer:', error); return null }
       return data
     }
 
-    async function dbSaveResult({ playerId, scoreGained, maxStreak }) {
+    async function dbSaveResult({ playerId, playerName, playerDept, scoreGained, maxStreak }) {
+      const saved = readSavedPlayer()
+      const nextSaved = {
+        ...(saved || {}),
+        id: playerId || saved?.id || null,
+        name: playerName || saved?.name || '',
+        dept: playerDept || saved?.dept || null,
+        score: (saved?.score ?? 0) + scoreGained,
+        max_streak: Math.max(saved?.max_streak ?? 0, maxStreak),
+        games_played: (saved?.games_played ?? 0) + 1,
+      }
+      writeSavedPlayer(nextSaved)
+
       if (!db || !playerId) return
       const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
       if (!p) return
       await db.from('players').update({
-        score: p.score + scoreGained,
-        max_streak: Math.max(p.max_streak, maxStreak),
-        games_played: p.games_played + 1,
+        score: (p.score ?? 0) + scoreGained,
+        max_streak: Math.max(p.max_streak ?? 0, maxStreak),
+        games_played: (p.games_played ?? 0) + 1,
         updated_at: new Date().toISOString(),
       }).eq('id', playerId)
     }
@@ -299,6 +324,18 @@
       return () => db.removeChannel(ch)
     }
 
+    function readSavedPlayer() {
+      try {
+        return JSON.parse(localStorage.getItem('nod_player') || 'null')
+      } catch {
+        return null
+      }
+    }
+
+    function writeSavedPlayer(player) {
+      try { localStorage.setItem('nod_player', JSON.stringify(player)) } catch {}
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: START
     // ══════════════════════════════════════════════════════════════════════════
@@ -308,14 +345,12 @@
       const [returning, setReturning] = useState(false)
 
       useEffect(() => {
-        try {
-          const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
-          if (saved?.name) {
-            setName(saved.name)
-            if (saved.dept) setDept(saved.dept)
-            setReturning(true)
-          }
-        } catch {}
+        const saved = readSavedPlayer()
+        if (saved?.name) {
+          setName(saved.name)
+          if (saved.dept) setDept(saved.dept)
+          setReturning(true)
+        }
       }, [])
 
       const canSubmit = name.trim().length >= 2 && dept && !loading
@@ -334,105 +369,85 @@
             <p className="text-[11px] font-semibold tracking-widest uppercase text-muted mb-6">
               Navigation of Disciplines
             </p>
-            <h1 className="text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5" style={{fontStyle:'italic'}}>
+            <h1 className="brand-wordmark text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5">
               The<br/>NOD
             </h1>
-            <p className="text-base font-light text-muted leading-relaxed max-w-[260px] mt-2">
-              Do you actually understand your colleagues — or are you just nodding?
-            </p>
 
-            <div className="mt-10 space-y-3 text-sm text-muted font-light">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🃏</span>
-                <span>10 challenges from other departments</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
-                <span>Streak bonuses for consecutive answers</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
-                <span>Live company-wide leaderboard</span>
-              </div>
-            </div>
-          </div>
+            <div className="mt-6 animate-slide-up">
+              <form onSubmit={handleSubmit}>
+                <div className="bg-surface rounded-card shadow-card p-5 space-y-4 mb-4">
 
-          {/* Form card */}
-          <div className="mt-8 animate-slide-up">
-            <form onSubmit={handleSubmit}>
-              <div className="bg-surface rounded-card shadow-card p-5 space-y-4 mb-4">
-
-                {/* Welcome back banner */}
-                {returning && (
-                  <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
-                    <p className="text-sm font-medium text-ink">
-                      Welcome back, {name} 👋
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => { setName(''); setDept(null); setReturning(false) }}
-                      className="text-[11px] font-semibold text-muted underline underline-offset-2"
-                    >
-                      Not you?
-                    </button>
-                  </div>
-                )}
-
-                {/* Name */}
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your name
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Alex"
-                    maxLength={30}
-                    autoComplete="off"
-                    autoFocus
-                    className="w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
-                    style={{border:'none'}}
-                  />
-                </div>
-
-                {/* Department */}
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your department
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {DEPARTMENTS.map(d => (
+                  {/* Welcome back banner */}
+                  {returning && (
+                    <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
+                      <p className="text-sm font-medium text-ink">
+                        Welcome back, {name} 👋
+                      </p>
                       <button
-                        key={d}
                         type="button"
-                        onClick={() => setDept(d)}
-                        className={`py-3 px-2 text-[12px] font-semibold rounded-xl leading-tight transition-all duration-100
-                          ${dept === d
-                            ? 'bg-ink text-white'
-                            : 'bg-field text-muted'
-                          }`}
+                        onClick={() => { setName(''); setDept(null); setReturning(false) }}
+                        className="text-[11px] font-semibold text-muted underline underline-offset-2"
                       >
-                        {d}
+                        Not you?
                       </button>
-                    ))}
-                  </div>
-                  {dept && (
-                    <p className="mt-2 text-[11px] text-muted font-light">
-                      You'll be quizzed on the other 2 departments.
-                    </p>
+                    </div>
                   )}
-                </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="btn-primary w-full py-4"
-              >
-                {loading ? 'Loading…' : "Let's play"}
-              </button>
-            </form>
+                  {/* Name */}
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                      Your name
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      placeholder="e.g. Alex"
+                      maxLength={30}
+                      autoComplete="off"
+                      autoFocus
+                      className="player-name-input w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
+                    />
+                  </div>
+
+                  {/* Department */}
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                      Your department
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {DEPARTMENTS.map(d => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => setDept(d)}
+                          className={`py-3 px-2 text-[12px] font-semibold rounded-xl leading-tight transition-all duration-100
+                            ${dept === d
+                              ? 'bg-ink text-white'
+                              : 'bg-field text-muted'
+                            }`}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                    {dept && (
+                      <p className="mt-2 text-[11px] text-muted font-light">
+                        Starting from {dept}. Your questions will come from {DEPARTMENT_RIVALS[dept][0]} and {DEPARTMENT_RIVALS[dept][1]}.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className="btn-primary w-full py-4"
+                >
+                  {loading ? 'Loading…' : "Let's play"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )
@@ -697,8 +712,25 @@
             setLoading(false)
             return
           }
+          const saved = readSavedPlayer()
           const data = await dbFetchLeaderboard()
-          setLeaders(data ?? [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
+          const currentPlayer = saved?.name ? {
+            id: saved.id || playerId || 'demo',
+            name: saved.name || playerName,
+            score: saved.score ?? 0,
+            max_streak: saved.max_streak ?? 0,
+            games_played: saved.games_played ?? 1,
+          } : null
+          const merged = data
+            ? (() => {
+                const withoutCurrent = currentPlayer
+                  ? data.filter(p => p.id !== currentPlayer.id && p.name.toLowerCase() !== currentPlayer.name.toLowerCase())
+                  : data
+                const withCurrent = currentPlayer ? [...withoutCurrent, currentPlayer] : withoutCurrent
+                return withCurrent.sort((a, b) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 10)
+              })()
+            : (currentPlayer ? [currentPlayer] : [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
+          setLeaders(merged)
           setLoading(false)
           unsub = dbSubscribeLeaderboard(setLeaders)
         }
@@ -833,7 +865,8 @@
 
         if (resolvedId) {
           setPlayerId(resolvedId)
-          try { localStorage.setItem('nod_player', JSON.stringify({ id: resolvedId, name, dept })) } catch {}
+          const saved = readSavedPlayer()
+          writeSavedPlayer({ ...(saved || {}), id: resolvedId, name, dept })
         }
 
         // Reset state
@@ -873,7 +906,7 @@
       const handleNext = useCallback(async () => {
         const next = currentIndex + 1
         if (next >= questions.length) {
-          await dbSaveResult({ playerId, scoreGained: score, maxStreak })
+          await dbSaveResult({ playerId, playerName, playerDept, scoreGained: score, maxStreak })
           setScreen('summary')
         } else {
           setCurrentIndex(next)
