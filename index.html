@@ -24,7 +24,7 @@
             correct: '#2D9E5F',
             wrong:   '#D94F4F',
           },
-          fontFamily: { sans: ['Cormorant Garamond', 'Georgia', 'serif'] },
+          fontFamily: { sans: ['Cormorant Garamond', 'Georgia', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'] },
           borderRadius: {
             card: '20px',
             btn:  '14px',
@@ -55,7 +55,7 @@
 
   <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-    html, body { background: #EBEBEB; margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; -webkit-font-smoothing: antialiased; }
+    html, body { background: #EBEBEB; margin: 0; font-family: 'Cormorant Garamond', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'; -webkit-font-smoothing: antialiased; }
     #root { min-height: 100dvh; display: flex; justify-content: center; align-items: stretch; }
 
     .btn-primary {
@@ -318,19 +318,19 @@
         } catch {}
       }, [])
 
-      const canSubmit = name.trim().length >= 2 && dept && !loading
+      const canSubmit = name.trim().length >= 2 && !loading
 
       const handleSubmit = (e) => {
         e.preventDefault()
         if (!canSubmit) return
-        onStart(name.trim(), dept)
+        onStart(name.trim(), null)
       }
 
       return (
-        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-16 pb-8 w-full max-w-[420px]">
+        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-10 pb-8 w-full max-w-[420px]">
 
           {/* Hero */}
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="pt-2">
             <p className="text-[11px] font-semibold tracking-widest uppercase text-muted mb-6">
               Navigation of Disciplines
             </p>
@@ -338,23 +338,8 @@
               The<br/>NOD
             </h1>
             <p className="text-base font-light text-muted leading-relaxed max-w-[260px] mt-2">
-              Do you actually understand your colleagues — or are you just nodding?
+              Do you actually understand your colleagues, or are you just nodding?
             </p>
-
-            <div className="mt-10 space-y-3 text-sm text-muted font-light">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🃏</span>
-                <span>10 challenges from other departments</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
-                <span>Streak bonuses for consecutive answers</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
-                <span>Live company-wide leaderboard</span>
-              </div>
-            </div>
           </div>
 
           {/* Form card */}
@@ -378,10 +363,10 @@
                   </div>
                 )}
 
-                {/* Name */}
+                {/* Username */}
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your name
+                    Your username
                   </label>
                   <input
                     type="text"
@@ -396,33 +381,6 @@
                   />
                 </div>
 
-                {/* Department */}
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your department
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {DEPARTMENTS.map(d => (
-                      <button
-                        key={d}
-                        type="button"
-                        onClick={() => setDept(d)}
-                        className={`py-3 px-2 text-[12px] font-semibold rounded-xl leading-tight transition-all duration-100
-                          ${dept === d
-                            ? 'bg-ink text-white'
-                            : 'bg-field text-muted'
-                          }`}
-                      >
-                        {d}
-                      </button>
-                    ))}
-                  </div>
-                  {dept && (
-                    <p className="mt-2 text-[11px] text-muted font-light">
-                      You'll be quizzed on the other 2 departments.
-                    </p>
-                  )}
-                </div>
               </div>
 
               <button
@@ -434,6 +392,18 @@
               </button>
             </form>
           </div>
+
+          {/* Features */}
+          <div className="mt-6 space-y-3 text-sm text-muted font-light">
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
+              <span>Streak bonuses for consecutive answers</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
+              <span>Live company-wide leaderboard</span>
+            </div>
+          </div>
         </div>
       )
     }
@@ -442,7 +412,7 @@
     // SCREEN: CHALLENGE CARD
     // ══════════════════════════════════════════════════════════════════════════
     function ClozeText({ cloze }) {
-      const parts = cloze.split('_____')
+      const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
       return (
         <p className="text-[1.25rem] font-medium text-ink leading-relaxed" style={{color:'#0D0C0B'}}>
           {parts[0]}
@@ -453,8 +423,9 @@
               fontWeight: 600,
               letterSpacing: '0.15em',
               margin: '0 2px',
+              whiteSpace: 'nowrap',
             }}
-          >. . . . . . .</span>
+          >. . . . .</span>
           {parts[1]}
         </p>
       )
@@ -528,7 +499,7 @@
     // SCREEN: FEEDBACK
     // ══════════════════════════════════════════════════════════════════════════
     function ClozeReveal({ cloze, term, isCorrect }) {
-      const parts = cloze.split('_____')
+      const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
       const color = isCorrect ? '#2D9E5F' : '#D94F4F'
       return (
         <p className="text-[1.15rem] font-light text-ink leading-relaxed">
@@ -638,7 +609,6 @@
           <div className="mb-8">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-1">Results for</p>
             <h2 className="text-4xl font-light text-ink" style={{fontStyle:'italic'}}>{playerName}</h2>
-            <p className="text-sm font-light text-muted mt-0.5">{playerDept} team</p>
           </div>
 
           {/* Score card */}
@@ -811,10 +781,9 @@
         setPlayerName(name)
         setPlayerDept(dept)
 
-        // Load terms, exclude player's own department
+        // Load terms (all departments)
         const allTerms = await dbFetchTerms() ?? FALLBACK_TERMS
-        const eligible = allTerms.filter(t => t.department !== dept)
-        const picked   = shuffle(eligible).slice(0, QUESTIONS_PER_GAME)
+        const picked   = shuffle(allTerms).slice(0, QUESTIONS_PER_GAME)
         setQuestions(picked)
 
         // Resolve player — reuse stored ID if name matches, otherwise upsert
