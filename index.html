@@ -271,7 +271,12 @@
       if (!db) return null
       const { data: existing } = await db.from('players').select('*').ilike('name', name).limit(1).single()
       if (existing) return existing
-      const { data, error } = await db.from('players').insert({ name }).select().single()
+      const { data, error } = await db.from('players').insert({
+        name,
+        score: 0,
+        max_streak: 0,
+        games_played: 0,
+      }).select().single()
       if (error) { console.error('[NOD] upsertPlayer:', error); return null }
       return data
     }
@@ -281,9 +286,9 @@
       const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
       if (!p) return
       await db.from('players').update({
-        score: p.score + scoreGained,
-        max_streak: Math.max(p.max_streak, maxStreak),
-        games_played: p.games_played + 1,
+        score: (p.score ?? 0) + scoreGained,
+        max_streak: Math.max(p.max_streak ?? 0, maxStreak),
+        games_played: (p.games_played ?? 0) + 1,
         updated_at: new Date().toISOString(),
       }).eq('id', playerId)
     }
@@ -345,9 +350,6 @@
             <h1 className="brand-wordmark text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5">
               The<br/>NOD
             </h1>
-            <p className="max-w-[18rem] text-[1rem] leading-[1.2] text-muted mb-6">
-              Pick your lane, then prove you know the others.
-            </p>
 
             <div className="mt-6 animate-slide-up">
               <form onSubmit={handleSubmit}>
