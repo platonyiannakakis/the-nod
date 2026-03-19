@@ -692,6 +692,11 @@
       useEffect(() => {
         let unsub = () => {}
         async function init() {
+          if (getPreviewHash() === 'leaderboard') {
+            setLeaders(PREVIEW_LEADERS)
+            setLoading(false)
+            return
+          }
           const data = await dbFetchLeaderboard()
           setLeaders(data ?? [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
           setLoading(false)
@@ -765,18 +770,39 @@
     // ══════════════════════════════════════════════════════════════════════════
     // APP — state machine
     // ══════════════════════════════════════════════════════════════════════════
+    // ── Preview mock data (for Figma import via URL hash) ──────────────────────
+    const PREVIEW_QUESTION = {
+      term: 'Bleed', department: 'Design',
+      sentence: 'The printer warned that without a 3mm . . . . . . . , a white border would appear along the edge once the pages were trimmed.',
+      options: ['Kerning', 'Bleed', 'Pantone', 'Visual Hierarchy'],
+      correct_index: 1,
+      explanation: 'Bleed is the extra 3mm that extends artwork beyond the cut line. Since cutting isn\'t perfectly precise, bleed ensures colours reach the very edge of the finished piece.'
+    }
+    const PREVIEW_LEADERS = [
+      { id:'1', name:'Sofia', score:320, max_streak:5, games_played:4 },
+      { id:'2', name:'Marcus', score:280, max_streak:4, games_played:3 },
+      { id:'3', name:'Platon', score:240, max_streak:3, games_played:2 },
+      { id:'4', name:'Isla', score:180, max_streak:2, games_played:2 },
+      { id:'5', name:'Theo', score:120, max_streak:1, games_played:1 },
+    ]
+    function getPreviewHash() {
+      const hash = window.location.hash.replace('#','')
+      return ['playing','feedback','feedback-wrong','summary','leaderboard'].includes(hash) ? hash : null
+    }
+
     function App() {
-      const [screen,         setScreen]         = useState('start')
-      const [playerName,     setPlayerName]     = useState('')
-      const [playerDept,     setPlayerDept]     = useState(null)
-      const [playerId,       setPlayerId]       = useState(null)
-      const [questions,      setQuestions]      = useState([])
+      const preview = getPreviewHash()
+      const [screen,         setScreen]         = useState(preview ? (preview === 'leaderboard' ? 'leaderboard' : preview === 'summary' ? 'summary' : preview.startsWith('feedback') ? 'feedback' : 'playing') : 'start')
+      const [playerName,     setPlayerName]     = useState(preview ? 'Platon' : '')
+      const [playerDept,     setPlayerDept]     = useState(preview ? 'Agile' : null)
+      const [playerId,       setPlayerId]       = useState(preview ? 'preview' : null)
+      const [questions,      setQuestions]      = useState(preview ? [PREVIEW_QUESTION] : [])
       const [currentIndex,   setCurrentIndex]   = useState(0)
-      const [selectedAnswer, setSelectedAnswer] = useState(null)
-      const [isCorrect,      setIsCorrect]      = useState(null)
-      const [score,          setScore]          = useState(0)
-      const [streak,         setStreak]         = useState(0)
-      const [maxStreak,      setMaxStreak]      = useState(0)
+      const [selectedAnswer, setSelectedAnswer] = useState(preview?.startsWith('feedback') ? (preview === 'feedback-wrong' ? 0 : 1) : null)
+      const [isCorrect,      setIsCorrect]      = useState(preview?.startsWith('feedback') ? (preview !== 'feedback-wrong') : null)
+      const [score,          setScore]          = useState(preview ? 240 : 0)
+      const [streak,         setStreak]         = useState(preview ? 3 : 0)
+      const [maxStreak,      setMaxStreak]      = useState(preview ? 3 : 0)
       const [loading,        setLoading]        = useState(false)
 
       // ── Start ──────────────────────────────────────────────────────────────
