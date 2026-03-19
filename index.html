@@ -337,102 +337,83 @@
             <h1 className="text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5" style={{fontStyle:'italic'}}>
               The<br/>NOD
             </h1>
-            <p className="text-base font-light text-muted leading-relaxed max-w-[260px] mt-2">
-              Do you actually understand your colleagues — or are you just nodding?
-            </p>
 
-            <div className="mt-10 space-y-3 text-sm text-muted font-light">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🃏</span>
-                <span>10 challenges from other departments</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
-                <span>Streak bonuses for consecutive answers</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
-                <span>Live company-wide leaderboard</span>
-              </div>
-            </div>
-          </div>
+            <div className="mt-6 animate-slide-up">
+              <form onSubmit={handleSubmit}>
+                <div className="bg-surface rounded-card shadow-card p-5 space-y-4 mb-4">
 
-          {/* Form card */}
-          <div className="mt-8 animate-slide-up">
-            <form onSubmit={handleSubmit}>
-              <div className="bg-surface rounded-card shadow-card p-5 space-y-4 mb-4">
-
-                {/* Welcome back banner */}
-                {returning && (
-                  <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
-                    <p className="text-sm font-medium text-ink">
-                      Welcome back, {name} 👋
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => { setName(''); setDept(null); setReturning(false) }}
-                      className="text-[11px] font-semibold text-muted underline underline-offset-2"
-                    >
-                      Not you?
-                    </button>
-                  </div>
-                )}
-
-                {/* Name */}
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your name
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Alex"
-                    maxLength={30}
-                    autoComplete="off"
-                    autoFocus
-                    className="w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
-                    style={{border:'none'}}
-                  />
-                </div>
-
-                {/* Department */}
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
-                    Your department
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {DEPARTMENTS.map(d => (
+                  {/* Welcome back banner */}
+                  {returning && (
+                    <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
+                      <p className="text-sm font-medium text-ink">
+                        Welcome back, {name} 👋
+                      </p>
                       <button
-                        key={d}
                         type="button"
-                        onClick={() => setDept(d)}
-                        className={`py-3 px-2 text-[12px] font-semibold rounded-xl leading-tight transition-all duration-100
-                          ${dept === d
-                            ? 'bg-ink text-white'
-                            : 'bg-field text-muted'
-                          }`}
+                        onClick={() => { setName(''); setDept(null); setReturning(false) }}
+                        className="text-[11px] font-semibold text-muted underline underline-offset-2"
                       >
-                        {d}
+                        Not you?
                       </button>
-                    ))}
-                  </div>
-                  {dept && (
-                    <p className="mt-2 text-[11px] text-muted font-light">
-                      You'll be quizzed on the other 2 departments.
-                    </p>
+                    </div>
                   )}
-                </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="btn-primary w-full py-4"
-              >
-                {loading ? 'Loading…' : "Let's play"}
-              </button>
-            </form>
+                  {/* Name */}
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                      Your name
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      placeholder="e.g. Alex"
+                      maxLength={30}
+                      autoComplete="off"
+                      autoFocus
+                      className="w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
+                      style={{border:'none'}}
+                    />
+                  </div>
+
+                  {/* Department */}
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                      Your department
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {DEPARTMENTS.map(d => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => setDept(d)}
+                          className={`py-3 px-2 text-[12px] font-semibold rounded-xl leading-tight transition-all duration-100
+                            ${dept === d
+                              ? 'bg-ink text-white'
+                              : 'bg-field text-muted'
+                            }`}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                    {dept && (
+                      <p className="mt-2 text-[11px] text-muted font-light">
+                        You'll be quizzed on the other 2 departments.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className="btn-primary w-full py-4"
+                >
+                  {loading ? 'Loading…' : "Let's play"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )
