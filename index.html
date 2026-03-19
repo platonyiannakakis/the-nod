@@ -103,6 +103,9 @@
     input:focus { outline: none; }
     input::placeholder { color: #BEBDBA; }
 
+    .brand-wordmark { font-style: italic; }
+    .player-name-input { border: none; }
+
     ::-webkit-scrollbar { display: none; }
   </style>
 </head>
@@ -139,6 +142,11 @@
     const STREAK_BONUS       = 5
 
     const DEPARTMENTS = ['Agile', 'Post-Production', 'Design']
+    const DEPARTMENT_RIVALS = {
+      Agile: ['Post-Production', 'Design'],
+      'Post-Production': ['Agile', 'Design'],
+      Design: ['Agile', 'Post-Production'],
+    }
 
     // ══════════════════════════════════════════════════════════════════════════
     // FALLBACK TERMS — used when Supabase is not configured
@@ -334,9 +342,12 @@
             <p className="text-[11px] font-semibold tracking-widest uppercase text-muted mb-6">
               Navigation of Disciplines
             </p>
-            <h1 className="text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5" style={{fontStyle:'italic'}}>
+            <h1 className="brand-wordmark text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5">
               The<br/>NOD
             </h1>
+            <p className="max-w-[18rem] text-[1rem] leading-[1.2] text-muted mb-6">
+              Pick your lane, then prove you know the others.
+            </p>
 
             <div className="mt-6 animate-slide-up">
               <form onSubmit={handleSubmit}>
@@ -371,8 +382,7 @@
                       maxLength={30}
                       autoComplete="off"
                       autoFocus
-                      className="w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
-                      style={{border:'none'}}
+                      className="player-name-input w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
                     />
                   </div>
 
@@ -399,7 +409,7 @@
                     </div>
                     {dept && (
                       <p className="mt-2 text-[11px] text-muted font-light">
-                        You'll be quizzed on the other 2 departments.
+                        Starting from {dept}. Your questions will come from {DEPARTMENT_RIVALS[dept][0]} and {DEPARTMENT_RIVALS[dept][1]}.
                       </p>
                     )}
                   </div>
