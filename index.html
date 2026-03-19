@@ -281,7 +281,19 @@
       return data
     }
 
-    async function dbSaveResult({ playerId, scoreGained, maxStreak }) {
+    async function dbSaveResult({ playerId, playerName, playerDept, scoreGained, maxStreak }) {
+      const saved = readSavedPlayer()
+      const nextSaved = {
+        ...(saved || {}),
+        id: playerId || saved?.id || null,
+        name: playerName || saved?.name || '',
+        dept: playerDept || saved?.dept || null,
+        score: (saved?.score ?? 0) + scoreGained,
+        max_streak: Math.max(saved?.max_streak ?? 0, maxStreak),
+        games_played: (saved?.games_played ?? 0) + 1,
+      }
+      writeSavedPlayer(nextSaved)
+
       if (!db || !playerId) return
       const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
       if (!p) return
@@ -312,6 +324,18 @@
       return () => db.removeChannel(ch)
     }
 
+    function readSavedPlayer() {
+      try {
+        return JSON.parse(localStorage.getItem('nod_player') || 'null')
+      } catch {
+        return null
+      }
+    }
+
+    function writeSavedPlayer(player) {
+      try { localStorage.setItem('nod_player', JSON.stringify(player)) } catch {}
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     // SCREEN: START
     // ══════════════════════════════════════════════════════════════════════════
@@ -321,14 +345,12 @@
       const [returning, setReturning] = useState(false)
 
       useEffect(() => {
-        try {
-          const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
-          if (saved?.name) {
-            setName(saved.name)
-            if (saved.dept) setDept(saved.dept)
-            setReturning(true)
-          }
-        } catch {}
+        const saved = readSavedPlayer()
+        if (saved?.name) {
+          setName(saved.name)
+          if (saved.dept) setDept(saved.dept)
+          setReturning(true)
+        }
       }, [])
 
       const canSubmit = name.trim().length >= 2 && dept && !loading
@@ -690,8 +712,25 @@
             setLoading(false)
             return
           }
+          const saved = readSavedPlayer()
           const data = await dbFetchLeaderboard()
-          setLeaders(data ?? [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
+          const currentPlayer = saved?.name ? {
+            id: saved.id || playerId || 'demo',
+            name: saved.name || playerName,
+            score: saved.score ?? 0,
+            max_streak: saved.max_streak ?? 0,
+            games_played: saved.games_played ?? 1,
+          } : null
+          const merged = data
+            ? (() => {
+                const withoutCurrent = currentPlayer
+                  ? data.filter(p => p.id !== currentPlayer.id && p.name.toLowerCase() !== currentPlayer.name.toLowerCase())
+                  : data
+                const withCurrent = currentPlayer ? [...withoutCurrent, currentPlayer] : withoutCurrent
+                return withCurrent.sort((a, b) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 10)
+              })()
+            : (currentPlayer ? [currentPlayer] : [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
+          setLeaders(merged)
           setLoading(false)
           unsub = dbSubscribeLeaderboard(setLeaders)
         }
@@ -826,7 +865,8 @@
 
         if (resolvedId) {
           setPlayerId(resolvedId)
-          try { localStorage.setItem('nod_player', JSON.stringify({ id: resolvedId, name, dept })) } catch {}
+          const saved = readSavedPlayer()
+          writeSavedPlayer({ ...(saved || {}), id: resolvedId, name, dept })
         }
 
         // Reset state
@@ -866,7 +906,7 @@
       const handleNext = useCallback(async () => {
         const next = currentIndex + 1
         if (next >= questions.length) {
-          await dbSaveResult({ playerId, scoreGained: score, maxStreak })
+          await dbSaveResult({ playerId, playerName, playerDept, scoreGained: score, maxStreak })
           setScreen('summary')
         } else {
           setCurrentIndex(next)
