@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#EBEBEB" />
+  <title>The NOD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg:      '#EBEBEB',
+            surface: '#FFFFFF',
+            ink:     '#1A1918',
+            muted:   '#8A8A88',
+            field:   '#F0EFED',
+            amber:   { DEFAULT: '#F5B800', light: '#FFF7D6' },
+            correct: '#2D9E5F',
+            wrong:   '#D94F4F',
+          },
+          fontFamily: { sans: ['Cormorant Garamond', 'Georgia', 'serif'] },
+          borderRadius: {
+            card: '20px',
+            btn:  '14px',
+            pill: '100px',
+          },
+          boxShadow: {
+            card:  '0 2px 16px rgba(0,0,0,0.07)',
+            'card-hover': '0 4px 24px rgba(0,0,0,0.11)',
+          },
+          keyframes: {
+            'slide-up': {
+              '0%':   { transform: 'translateY(18px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)',    opacity: '1' },
+            },
+            'fade-in': {
+              '0%':   { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+          },
+          animation: {
+            'slide-up': 'slide-up 0.28s cubic-bezier(0.22,1,0.36,1)',
+            'fade-in':  'fade-in 0.2s ease-out',
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html, body { background: #EBEBEB; margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; -webkit-font-smoothing: antialiased; }
+    #root { min-height: 100dvh; display: flex; justify-content: center; align-items: stretch; }
+
+    .btn-primary {
+      background: #1A1918;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: opacity 0.12s, transform 0.1s;
+      user-select: none;
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:active  { opacity: 0.85; transform: scale(0.985); }
+    .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: #F0EFED;
+      color: #1A1918;
+      font-weight: 600;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: opacity 0.12s, transform 0.1s;
+      user-select: none;
+    }
+    .btn-secondary:active { opacity: 0.75; transform: scale(0.985); }
+
+    .option-btn {
+      background: #fff;
+      color: #1A1918;
+      font-weight: 500;
+      border: 1.5px solid transparent;
+      border-radius: 16px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: box-shadow 0.12s, transform 0.1s, border-color 0.1s;
+      user-select: none;
+      text-align: left;
+      width: 100%;
+    }
+    .option-btn:active { transform: scale(0.985); box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+
+    input:focus { outline: none; }
+    input::placeholder { color: #BEBDBA; }
+
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel for JSX in-browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // CONFIGURATION — paste your Supabase credentials here
+    // ══════════════════════════════════════════════════════════════════════════
+    const SUPABASE_URL = ''   // e.g. 'https://xyz.supabase.co'
+    const SUPABASE_KEY = ''   // your anon/public key
+
+    const db = (SUPABASE_URL && SUPABASE_KEY)
+      ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      : null
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // CONSTANTS
+    // ══════════════════════════════════════════════════════════════════════════
+    const QUESTIONS_PER_GAME = 10
+    const PTS_CORRECT        = 10
+    const STREAK_BONUS_AT    = 3
+    const STREAK_BONUS       = 5
+
+    const DEPARTMENTS = ['Agile', 'Post-Production', 'Design']
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // FALLBACK TERMS — used when Supabase is not configured
+    // ══════════════════════════════════════════════════════════════════════════
+    const FALLBACK_TERMS = [
+      // ── AGILE ──────────────────────────────────────────────────────────────
+      { id:'a1', term:'Sprint', department:'Agile',
+        cloze: "The team committed to shipping the redesigned homepage within the next _____, a two-week cycle starting Monday.",
+        options: ['Sprint', 'Backlog', 'Standup', 'Retrospective'],
+        correct_index: 0,
+        explanation: 'A Sprint is a time-boxed period — typically 1–2 weeks — where the team commits to completing a defined set of tasks. At the end, they review what was built and plan the next one.' },
+      { id:'a2', term:'Backlog', department:'Agile',
+        cloze: "Before planning began, the product owner sorted the _____ and moved the checkout bug all the way to the top.",
+        options: ['Velocity', 'Backlog', 'Story Points', 'Sprint'],
+        correct_index: 1,
+        explanation: 'The backlog is the master list of features, bug fixes, and tasks ordered by priority. The product owner decides what goes to the top.' },
+      { id:'a3', term:'Velocity', department:'Agile',
+        cloze: "After three sprints of data, the team\'s _____ averaged 34 points — enough to forecast the launch date with confidence.",
+        options: ['Story Points', 'Sprint', 'Velocity', 'Standup'],
+        correct_index: 2,
+        explanation: 'Velocity is how much work a team finishes in a sprint, measured in story points. Tracking it over time helps predict how much the team can commit to in future sprints.' },
+      { id:'a4', term:'Standup', department:'Agile',
+        cloze: "Every morning at 9am the team held a 15-minute _____ to share what they were working on and flag any blockers.",
+        options: ['Retrospective', 'Standup', 'Sprint', 'Backlog'],
+        correct_index: 1,
+        explanation: 'The daily standup (15 min max) keeps the team aligned. Each person answers: what did I do, what will I do today, am I blocked?' },
+      { id:'a5', term:'Retrospective', department:'Agile',
+        cloze: "At the end of the sprint, the whole team gathered for a _____ to reflect on what went well and what to change.",
+        options: ['Standup', 'Story Points', 'Backlog', 'Retrospective'],
+        correct_index: 3,
+        explanation: 'The retro is how Agile teams continuously improve. They look back on the sprint and agree on one or two things to do differently next time.' },
+      { id:'a6', term:'Story Points', department:'Agile',
+        cloze: "The engineer estimated the new search feature at eight _____, accounting for the API complexity and edge cases.",
+        options: ['Story Points', 'Velocity', 'Sprint', 'Standup'],
+        correct_index: 0,
+        explanation: 'Story points estimate relative effort — not hours. Teams use scales like Fibonacci (1, 2, 3, 5, 8) based on complexity and uncertainty.' },
+      // ── POST-PRODUCTION ────────────────────────────────────────────────────
+      { id:'p1', term:'Rough Cut', department:'Post-Production',
+        cloze: "The director sat down to review the _____ — a first assembly of all the clips in sequence, without colour or sound polish.",
+        options: ['Colour Grade', 'Rough Cut', 'Timecode', 'B-Roll'],
+        correct_index: 1,
+        explanation: 'The rough cut is the first full assembly. Clips are in sequence but transitions, colour, and sound aren\'t polished. It\'s used to check structure and pacing.' },
+      { id:'p2', term:'Colour Grade', department:'Post-Production',
+        cloze: "Once the edit was locked, the colourist began the _____, giving the film its signature warm, golden look.",
+        options: ['Rough Cut', 'VFX', 'Foley', 'Colour Grade'],
+        correct_index: 3,
+        explanation: 'Colour grading defines the visual mood of a film. Editors adjust exposure, contrast, and hue to create a consistent aesthetic — warm tones for drama, cold blues for thrillers.' },
+      { id:'p3', term:'B-Roll', department:'Post-Production',
+        cloze: "The interview felt flat on its own, so the editor cut in _____ of the city streets and the product being used.",
+        options: ['B-Roll', 'Foley', 'Timecode', 'VFX'],
+        correct_index: 0,
+        explanation: 'B-roll is all the supporting footage — city streets, product close-ups, hands typing — cut over interviews to keep visuals interesting and illustrate what\'s being said.' },
+      { id:'p4', term:'Foley', department:'Post-Production',
+        cloze: "The footsteps in the recording were too quiet, so a _____ artist re-recorded them on a wooden floor to match the picture.",
+        options: ['VFX', 'Timecode', 'Foley', 'Rough Cut'],
+        correct_index: 2,
+        explanation: 'Foley artists recreate everyday sounds — footsteps, rustling fabric, creaking doors — in a studio, in sync with the picture, to add texture to the audio mix.' },
+      { id:'p5', term:'Timecode', department:'Post-Production',
+        cloze: "The editor asked the client to reference the _____ when leaving notes, so they could pinpoint the exact frame they meant.",
+        options: ['Colour Grade', 'Timecode', 'B-Roll', 'Rough Cut'],
+        correct_index: 1,
+        explanation: 'Timecode (HH:MM:SS:FF) is stamped on every frame. It lets editors and clients reference exact moments — "cut at 01:22:14:08" — with frame-level precision.' },
+      { id:'p6', term:'VFX', department:'Post-Production',
+        cloze: "The explosion on set was too small, so the _____ team extended it digitally in post to fill the entire frame.",
+        options: ['Foley', 'Timecode', 'Rough Cut', 'VFX'],
+        correct_index: 3,
+        explanation: 'VFX are digital elements added after filming — CGI, compositing, environment extensions. Unlike practical SFX (on-set), VFX happen entirely in post-production.' },
+      // ── DESIGN ─────────────────────────────────────────────────────────────
+      { id:'d1', term:'Kerning', department:'Design',
+        cloze: "The logo looked slightly off until the designer adjusted the _____ between the 'A' and 'V', closing the awkward gap.",
+        options: ['Kerning', 'Bleed', 'Visual Hierarchy', 'Wireframe'],
+        correct_index: 0,
+        explanation: 'Kerning fine-tunes the space between two specific letters. Poor kerning looks uneven; good kerning is invisible — it just feels right, especially in headlines and logos.' },
+      { id:'d2', term:'Wireframe', department:'Design',
+        cloze: "Before adding any colour or imagery, the UX team shared a _____ showing exactly where each button and text block would sit.",
+        options: ['Pantone', 'Gestalt', 'Wireframe', 'Bleed'],
+        correct_index: 2,
+        explanation: 'A wireframe is a greyscale layout showing where elements will go — without colours or imagery. It helps teams agree on structure and flow before visual design begins.' },
+      { id:'d3', term:'Bleed', department:'Design',
+        cloze: "The printer warned that without a 3mm _____, a white border would appear along the edge once the pages were trimmed.",
+        options: ['Kerning', 'Bleed', 'Pantone', 'Visual Hierarchy'],
+        correct_index: 1,
+        explanation: 'Bleed is the extra 3mm that extends artwork beyond the cut line. Since cutting isn\'t perfectly precise, bleed ensures colours reach the very edge of the finished piece.' },
+      { id:'d4', term:'Pantone', department:'Design',
+        cloze: "To keep the brand red consistent across every market, the packaging spec included a specific _____ colour code.",
+        options: ['Gestalt', 'Wireframe', 'Pantone', 'Kerning'],
+        correct_index: 2,
+        explanation: 'Pantone (PMS) is the global standard for specifying ink colours. "Pantone 186 C" means exactly the same red to every printer in the world, regardless of monitor calibration.' },
+      { id:'d5', term:'Gestalt', department:'Design',
+        cloze: "Using _____ principles, the designer grouped related options visually so users could scan the form without reading every label.",
+        options: ['Bleed', 'Visual Hierarchy', 'Wireframe', 'Gestalt'],
+        correct_index: 3,
+        explanation: 'Gestalt principles — proximity, similarity, closure, continuity — explain how the eye naturally organises elements into groups. Designers use them to create intuitive, cohesive layouts.' },
+      { id:'d6', term:'Visual Hierarchy', department:'Design',
+        cloze: "By making the headline three times larger than the body copy, she created a clear _____ that guided the reader\'s eye to the key message.",
+        options: ['Visual Hierarchy', 'Gestalt', 'Kerning', 'Wireframe'],
+        correct_index: 0,
+        explanation: 'Visual hierarchy uses size, weight, colour, and position to control where your eye goes first. Good hierarchy means viewers absorb the most important info naturally.' },
+    ]
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ══════════════════════════════════════════════════════════════════════════
+    function shuffle(arr) {
+      const a = [...arr]
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]]
+      }
+      return a
+    }
+
+    // ── Supabase helpers ──────────────────────────────────────────────────────
+    async function dbFetchTerms() {
+      if (!db) return null
+      const { data, error } = await db.from('terms').select('*')
+      if (error) { console.error('[NOD] fetchTerms:', error); return null }
+      return data
+    }
+
+    async function dbUpsertPlayer(name) {
+      if (!db) return null
+      const { data: existing } = await db.from('players').select('*').ilike('name', name).limit(1).single()
+      if (existing) return existing
+      const { data, error } = await db.from('players').insert({ name }).select().single()
+      if (error) { console.error('[NOD] upsertPlayer:', error); return null }
+      return data
+    }
+
+    async function dbSaveResult({ playerId, scoreGained, maxStreak }) {
+      if (!db || !playerId) return
+      const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
+      if (!p) return
+      await db.from('players').update({
+        score: p.score + scoreGained,
+        max_streak: Math.max(p.max_streak, maxStreak),
+        games_played: p.games_played + 1,
+        updated_at: new Date().toISOString(),
+      }).eq('id', playerId)
+    }
+
+    async function dbFetchLeaderboard() {
+      if (!db) return null
+      const { data, error } = await db.from('players')
+        .select('id,name,score,max_streak,games_played')
+        .order('score', { ascending: false }).limit(10)
+      if (error) { console.error('[NOD] fetchLeaderboard:', error); return null }
+      return data
+    }
+
+    function dbSubscribeLeaderboard(callback) {
+      if (!db) return () => {}
+      const ch = db.channel('lb')
+        .on('postgres_changes', { event:'*', schema:'public', table:'players' }, async () => {
+          const data = await dbFetchLeaderboard()
+          if (data) callback(data)
+        }).subscribe()
+      return () => db.removeChannel(ch)
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SCREEN: START
+    // ══════════════════════════════════════════════════════════════════════════
+    function StartScreen({ onStart, loading }) {
+      const [name, setName] = useState('')
+      const [dept, setDept] = useState(null)
+      const [returning, setReturning] = useState(false)
+
+      useEffect(() => {
+        try {
+          const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
+          if (saved?.name) {
+            setName(saved.name)
+            if (saved.dept) setDept(saved.dept)
+            setReturning(true)
+          }
+        } catch {}
+      }, [])
+
+      const canSubmit = name.trim().length >= 2 && dept && !loading
+
+      const handleSubmit = (e) => {
+        e.preventDefault()
+        if (!canSubmit) return
+        onStart(name.trim(), dept)
+      }
+
+      return (
+        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-16 pb-8 w-full max-w-[420px]">
+
+          {/* Hero */}
+          <div className="flex-1 flex flex-col justify-center">
+            <p className="text-[11px] font-semibold tracking-widest uppercase text-muted mb-6">
+              Navigation of Disciplines
+            </p>
+            <h1 className="text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5" style={{fontStyle:'italic'}}>
+              The<br/>NOD
+            </h1>
+            <p className="text-base font-light text-muted leading-relaxed max-w-[260px] mt-2">
+              Do you actually understand your colleagues — or are you just nodding?
+            </p>
+
+            <div className="mt-10 space-y-3 text-sm text-muted font-light">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🃏</span>
+                <span>10 challenges from other departments</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
+                <span>Streak bonuses for consecutive answers</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
+                <span>Live company-wide leaderboard</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Form card */}
+          <div className="mt-8 animate-slide-up">
+            <form onSubmit={handleSubmit}>
+              <div className="bg-surface rounded-card shadow-card p-5 space-y-4 mb-4">
+
+                {/* Welcome back banner */}
+                {returning && (
+                  <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
+                    <p className="text-sm font-medium text-ink">
+                      Welcome back, {name} 👋
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setName(''); setDept(null); setReturning(false) }}
+                      className="text-[11px] font-semibold text-muted underline underline-offset-2"
+                    >
+                      Not you?
+                    </button>
+                  </div>
+                )}
+
+                {/* Name */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                    Your name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="e.g. Alex"
+                    maxLength={30}
+                    autoComplete="off"
+                    autoFocus
+                    className="w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
+                    style={{border:'none'}}
+                  />
+                </div>
+
+                {/* Department */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                    Your department
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {DEPARTMENTS.map(d => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setDept(d)}
+                        className={`py-3 px-2 text-[12px] font-semibold rounded-xl leading-tight transition-all duration-100
+                          ${dept === d
+                            ? 'bg-ink text-white'
+                            : 'bg-field text-muted'
+                          }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                  {dept && (
+                    <p className="mt-2 text-[11px] text-muted font-light">
+                      You'll be quizzed on the other 2 departments.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className="btn-primary w-full py-4"
+              >
+                {loading ? 'Loading…' : "Let's play"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SCREEN: CHALLENGE CARD
+    // ══════════════════════════════════════════════════════════════════════════
+    function ClozeText({ cloze }) {
+      const parts = cloze.split('_____')
+      return (
+        <p className="text-[1.25rem] font-medium text-ink leading-relaxed" style={{color:'#0D0C0B'}}>
+          {parts[0]}
+          <span
+            style={{
+              display: 'inline',
+              color: '#1A1918',
+              fontWeight: 600,
+              letterSpacing: '0.15em',
+              margin: '0 2px',
+            }}
+          >. . . . . . .</span>
+          {parts[1]}
+        </p>
+      )
+    }
+
+    function ChallengeCard({ question, questionNumber, totalQuestions, streak, score, onAnswer }) {
+      const progress = ((questionNumber - 1) / totalQuestions) * 100
+
+      return (
+        <div className="flex flex-col min-h-dvh bg-bg w-full max-w-[420px]">
+
+          {/* Top bar */}
+          <div className="px-5 pt-12 pb-4 flex items-center justify-between">
+            <span className="text-sm font-light text-muted tabular-nums">
+              {questionNumber} <span className="text-muted/50">/ {totalQuestions}</span>
+            </span>
+            <div className="flex items-center gap-3">
+              {streak >= 2 && (
+                <span className="text-sm font-semibold" style={{color:'#F5B800'}}>🔥 {streak}</span>
+              )}
+              <span className="text-sm font-semibold text-ink tabular-nums">{score} pts</span>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="mx-5 h-1 bg-surface rounded-full overflow-hidden mb-5">
+            <div
+              className="h-full bg-ink rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          {/* Question card */}
+          <div className="flex-1 flex flex-col px-5 animate-slide-up">
+            <div className="bg-surface rounded-card shadow-card p-6 mb-4">
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-muted bg-field px-2.5 py-1 rounded-full">
+                  {question.department}
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{color:'#888', letterSpacing:'0.12em'}}>
+                  Fill the blank
+                </span>
+              </div>
+
+              <ClozeText cloze={question.cloze} />
+            </div>
+
+            {/* Options — term names */}
+            <div className="space-y-2.5 pb-8">
+              {question.options.map((opt, i) => (
+                <button
+                  key={i}
+                  onClick={() => onAnswer(i)}
+                  className="option-btn px-5 py-4 text-base"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="font-semibold text-muted shrink-0 text-[11px] w-4">
+                      {String.fromCharCode(65 + i)}
+                    </span>
+                    <span className="font-medium" style={{fontStyle:'italic'}}>{opt}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SCREEN: FEEDBACK
+    // ══════════════════════════════════════════════════════════════════════════
+    function ClozeReveal({ cloze, term, isCorrect }) {
+      const parts = cloze.split('_____')
+      const color = isCorrect ? '#2D9E5F' : '#D94F4F'
+      return (
+        <p className="text-[1.15rem] font-light text-ink leading-relaxed">
+          {parts[0]}
+          <span
+            style={{
+              display: 'inline-block',
+              background: isCorrect ? 'rgba(45,158,95,0.12)' : 'rgba(217,79,79,0.12)',
+              color: color,
+              borderRadius: '6px',
+              padding: '0 8px',
+              margin: '0 2px',
+              fontWeight: 600,
+              fontStyle: 'italic',
+            }}
+          >{term}</span>
+          {parts[1]}
+        </p>
+      )
+    }
+
+    function FeedbackScreen({ question, selectedAnswer, isCorrect, streak, onNext, isLast }) {
+      const selectedTerm = question.options[selectedAnswer]
+
+      return (
+        <div className="flex flex-col min-h-dvh bg-bg w-full max-w-[420px] animate-slide-up">
+
+          {/* Result indicator */}
+          <div className="px-5 pt-12 pb-4">
+            <div className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-pill
+              ${isCorrect ? 'bg-correct text-white' : 'bg-wrong text-white'}`}>
+              <span className="font-bold text-base">{isCorrect ? '✓' : '✗'}</span>
+              <span className="font-semibold text-sm">
+                {isCorrect ? 'Correct!' : 'Not quite.'}
+              </span>
+              {isCorrect && streak >= 2 && (
+                <span className="text-white/80 text-xs ml-1">🔥 {streak}-streak</span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col px-5 pb-8">
+
+            {/* Sentence reveal card */}
+            <div className="bg-surface rounded-card shadow-card p-6 mb-4">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-4">
+                {question.department}
+              </p>
+
+              <ClozeReveal cloze={question.cloze} term={question.term} isCorrect={isCorrect} />
+
+              {/* If wrong, show what they picked */}
+              {!isCorrect && (
+                <p className="mt-3 text-sm font-light text-muted">
+                  You chose: <span className="font-semibold" style={{color:'#D94F4F',fontStyle:'italic'}}>{selectedTerm}</span>
+                </p>
+              )}
+
+              {/* Options recap — subtle */}
+              <div className="mt-5 pt-4 border-t border-field space-y-1.5">
+                {question.options.map((opt, i) => {
+                  const isRight    = i === question.correct_index
+                  const isSelected = i === selectedAnswer && !isRight
+                  if (!isRight && !isSelected) return null
+                  return (
+                    <div key={i} className={`flex items-center gap-2 text-sm
+                      ${isRight ? 'text-correct' : 'text-wrong'}`}>
+                      <span className="font-bold">{isRight ? '✓' : '✗'}</span>
+                      <span className="font-medium" style={{fontStyle:'italic'}}>{opt}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Explanation card */}
+            <div className="bg-amber-light rounded-card p-5 mb-6">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-2">Why?</p>
+              <p className="text-sm font-light text-ink leading-relaxed">{question.explanation}</p>
+            </div>
+
+            <div className="mt-auto">
+              <button onClick={onNext} className="btn-primary w-full py-4">
+                {isLast ? 'See my score' : 'Next question'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SCREEN: SUMMARY
+    // ══════════════════════════════════════════════════════════════════════════
+    function SummaryScreen({ playerName, playerDept, score, totalQuestions, maxStreak, onLeaderboard, onPlayAgain }) {
+      const correct  = Math.round(score / PTS_CORRECT)
+      const accuracy = Math.round((correct / totalQuestions) * 100)
+
+      const { emoji, msg } = accuracy >= 90 ? { emoji:'🏆', msg:"You're genuinely cross-functional." }
+                           : accuracy >= 70 ? { emoji:'💪', msg:"Solid. A few gaps, but you're getting there." }
+                           : accuracy >= 50 ? { emoji:'🤔', msg:'Some nodding happening. Keep playing.' }
+                           :                  { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
+
+      return (
+        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-14 pb-8 w-full max-w-[420px] animate-slide-up">
+
+          <div className="mb-8">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-1">Results for</p>
+            <h2 className="text-4xl font-light text-ink" style={{fontStyle:'italic'}}>{playerName}</h2>
+            <p className="text-sm font-light text-muted mt-0.5">{playerDept} team</p>
+          </div>
+
+          {/* Score card */}
+          <div className="bg-surface rounded-card shadow-card p-6 mb-4">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">Total score</p>
+                <p className="text-7xl font-light text-ink tabular-nums leading-none">{score}</p>
+                <p className="text-sm font-light text-muted mt-1.5">points</p>
+              </div>
+              <span className="text-4xl mt-1">{emoji}</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-0 pt-5 border-t border-field text-center">
+              {[
+                { val: `${correct}/${totalQuestions}`, label: 'Correct' },
+                { val: maxStreak,                       label: 'Best streak' },
+                { val: `${accuracy}%`,                  label: 'Accuracy' },
+              ].map(({ val, label }, i) => (
+                <div key={label} className={i > 0 ? 'border-l border-field' : ''}>
+                  <p className="text-2xl font-semibold text-ink tabular-nums">{val}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted mt-0.5">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-sm font-light text-muted leading-relaxed px-1 mb-8">{msg}</p>
+
+          <div className="mt-auto space-y-3">
+            <button onClick={onLeaderboard} className="btn-primary w-full py-4">
+              See the leaderboard
+            </button>
+            <button onClick={onPlayAgain} className="btn-secondary w-full py-3.5 text-sm font-semibold">
+              Play again
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SCREEN: LEADERBOARD
+    // ══════════════════════════════════════════════════════════════════════════
+    const MEDALS = ['🥇','🥈','🥉']
+
+    function Leaderboard({ playerId, playerName, onPlayAgain }) {
+      const [leaders, setLeaders] = useState([])
+      const [loading, setLoading] = useState(true)
+
+      useEffect(() => {
+        let unsub = () => {}
+        async function init() {
+          const data = await dbFetchLeaderboard()
+          setLeaders(data ?? [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
+          setLoading(false)
+          unsub = dbSubscribeLeaderboard(setLeaders)
+        }
+        init()
+        return () => unsub()
+      }, [])
+
+      return (
+        <div className="flex flex-col min-h-dvh bg-bg w-full max-w-[420px]">
+
+          {/* Header card */}
+          <div className="mx-5 mt-12 mb-5 bg-ink rounded-card p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1">Company-wide</p>
+            <h2 className="text-3xl font-light text-white" style={{fontStyle:'italic'}}>Leaderboard</h2>
+          </div>
+
+          {/* List */}
+          <div className="flex-1 px-5 overflow-y-auto">
+            {loading ? (
+              <p className="text-center py-16 text-sm font-light text-muted">Loading…</p>
+            ) : leaders.length === 0 ? (
+              <p className="text-center py-16 text-sm font-light text-muted">No scores yet — be the first!</p>
+            ) : (
+              <div className="space-y-2 pb-4">
+                {leaders.map((p, i) => {
+                  const isMe = p.id === playerId || p.name.toLowerCase() === playerName.toLowerCase()
+                  return (
+                    <div
+                      key={p.id}
+                      className={`flex items-center gap-4 px-4 py-4 rounded-card transition-all
+                        ${isMe ? 'bg-amber-light shadow-card' : 'bg-surface shadow-card'}`}
+                    >
+                      <span className="text-lg w-7 text-center shrink-0">
+                        {i < 3 ? MEDALS[i] : (
+                          <span className="text-sm font-semibold text-muted tabular-nums">{i+1}</span>
+                        )}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm text-ink truncate">
+                          {p.name}
+                          {isMe && <span className="ml-1.5 text-xs font-light text-muted">(you)</span>}
+                        </p>
+                        <p className="text-[10px] font-light text-muted mt-0.5">
+                          {p.games_played} game{p.games_played !== 1 ? 's' : ''} · best streak {p.max_streak}
+                        </p>
+                      </div>
+                      <p className="text-xl font-semibold text-ink tabular-nums shrink-0">
+                        {p.score}
+                        <span className="text-xs font-light text-muted ml-0.5">pts</span>
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="px-5 py-6 space-y-3">
+            <button onClick={onPlayAgain} className="btn-primary w-full py-4">
+              Play again
+            </button>
+            <p className="text-center text-[10px] font-light text-muted">Updates in real-time</p>
+          </div>
+        </div>
+      )
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // APP — state machine
+    // ══════════════════════════════════════════════════════════════════════════
+    function App() {
+      const [screen,         setScreen]         = useState('start')
+      const [playerName,     setPlayerName]     = useState('')
+      const [playerDept,     setPlayerDept]     = useState(null)
+      const [playerId,       setPlayerId]       = useState(null)
+      const [questions,      setQuestions]      = useState([])
+      const [currentIndex,   setCurrentIndex]   = useState(0)
+      const [selectedAnswer, setSelectedAnswer] = useState(null)
+      const [isCorrect,      setIsCorrect]      = useState(null)
+      const [score,          setScore]          = useState(0)
+      const [streak,         setStreak]         = useState(0)
+      const [maxStreak,      setMaxStreak]      = useState(0)
+      const [loading,        setLoading]        = useState(false)
+
+      // ── Start ──────────────────────────────────────────────────────────────
+      const startGame = useCallback(async (name, dept) => {
+        setLoading(true)
+        setPlayerName(name)
+        setPlayerDept(dept)
+
+        // Load terms, exclude player's own department
+        const allTerms = await dbFetchTerms() ?? FALLBACK_TERMS
+        const eligible = allTerms.filter(t => t.department !== dept)
+        const picked   = shuffle(eligible).slice(0, QUESTIONS_PER_GAME)
+        setQuestions(picked)
+
+        // Resolve player — reuse stored ID if name matches, otherwise upsert
+        let resolvedId = null
+        try {
+          const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
+          if (saved?.id && saved.name.toLowerCase() === name.toLowerCase()) {
+            resolvedId = saved.id
+          }
+        } catch {}
+
+        if (!resolvedId) {
+          const player = await dbUpsertPlayer(name)
+          if (player) resolvedId = player.id
+        }
+
+        if (resolvedId) {
+          setPlayerId(resolvedId)
+          try { localStorage.setItem('nod_player', JSON.stringify({ id: resolvedId, name, dept })) } catch {}
+        }
+
+        // Reset state
+        setCurrentIndex(0)
+        setScore(0)
+        setStreak(0)
+        setMaxStreak(0)
+        setSelectedAnswer(null)
+        setIsCorrect(null)
+
+        setLoading(false)
+        setScreen('playing')
+      }, [])
+
+      // ── Answer ─────────────────────────────────────────────────────────────
+      const handleAnswer = useCallback((answerIndex) => {
+        const q       = questions[currentIndex]
+        const correct = answerIndex === q.correct_index
+
+        setSelectedAnswer(answerIndex)
+        setIsCorrect(correct)
+
+        if (correct) {
+          const newStreak = streak + 1
+          const bonus     = newStreak >= STREAK_BONUS_AT ? STREAK_BONUS : 0
+          setScore(s => s + PTS_CORRECT + bonus)
+          setStreak(newStreak)
+          setMaxStreak(m => Math.max(m, newStreak))
+        } else {
+          setStreak(0)
+        }
+
+        setScreen('feedback')
+      }, [questions, currentIndex, streak])
+
+      // ── Next ───────────────────────────────────────────────────────────────
+      const handleNext = useCallback(async () => {
+        const next = currentIndex + 1
+        if (next >= questions.length) {
+          await dbSaveResult({ playerId, scoreGained: score, maxStreak })
+          setScreen('summary')
+        } else {
+          setCurrentIndex(next)
+          setSelectedAnswer(null)
+          setIsCorrect(null)
+          setScreen('playing')
+        }
+      }, [currentIndex, questions.length, playerId, score, maxStreak])
+
+      // ── Play again ─────────────────────────────────────────────────────────
+      const playAgain = useCallback(() => startGame(playerName, playerDept), [startGame, playerName, playerDept])
+
+      const q = questions[currentIndex]
+
+      return (
+        <div className="w-full max-w-[420px] mx-auto flex flex-col min-h-dvh">
+          {screen === 'start'       && <StartScreen    onStart={startGame} loading={loading} />}
+          {screen === 'playing'     && q && <ChallengeCard question={q} questionNumber={currentIndex+1} totalQuestions={QUESTIONS_PER_GAME} streak={streak} score={score} onAnswer={handleAnswer} />}
+          {screen === 'feedback'    && q && <FeedbackScreen question={q} selectedAnswer={selectedAnswer} isCorrect={isCorrect} streak={streak} onNext={handleNext} isLast={currentIndex === questions.length - 1} />}
+          {screen === 'summary'     && <SummaryScreen  playerName={playerName} playerDept={playerDept} score={score} totalQuestions={QUESTIONS_PER_GAME} maxStreak={maxStreak} onLeaderboard={() => setScreen('leaderboard')} onPlayAgain={playAgain} />}
+          {screen === 'leaderboard' && <Leaderboard    playerId={playerId} playerName={playerName} onPlayAgain={playAgain} />}
+        </div>
+      )
+    }
+
+    // ── Mount ──────────────────────────────────────────────────────────────────
+    const root = ReactDOM.createRoot(document.getElementById('root'))
+    root.render(<App />)
+  </script>
+</body>
+</html>
