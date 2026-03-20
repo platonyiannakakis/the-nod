@@ -312,13 +312,14 @@
       const [name, setName] = useState('')
       const [dept, setDept] = useState(null)
       const [returning, setReturning] = useState(false)
+      const [savedName, setSavedName] = useState('')
 
       useEffect(() => {
         try {
-          const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
-          if (saved?.name) {
-            setName(saved.name)
-            if (saved.dept) setDept(saved.dept)
+          const lastName = localStorage.getItem('nod_last_name')
+          if (lastName) {
+            setName(lastName)
+            setSavedName(lastName)
             setReturning(true)
           }
         } catch {}
@@ -337,13 +338,13 @@
 
           {/* Hero */}
           <div className="pt-2">
-            <p className="text-[11px] font-semibold tracking-widest uppercase text-muted mb-6">
+            <p className="text-[11px] font-semibold tracking-widest uppercase text-ink mb-6">
               Navigation of Disciplines
             </p>
             <h1 className="text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5" style={{fontStyle:'italic'}}>
               The<br/>NOD
             </h1>
-            <p className="text-base font-light text-muted leading-relaxed max-w-[260px] mt-2">
+            <p className="text-base font-light text-ink leading-relaxed max-w-[260px] mt-2">
               Do you actually understand your colleagues, or are you just nodding?
             </p>
           </div>
@@ -357,12 +358,12 @@
                 {returning && (
                   <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
                     <p className="text-sm font-medium text-ink">
-                      Welcome back, {name} 👋
+                      Welcome back, {savedName} 👋
                     </p>
                     <button
                       type="button"
-                      onClick={() => { setName(''); setDept(null); setReturning(false) }}
-                      className="text-[11px] font-semibold text-muted underline underline-offset-2"
+                      onClick={() => setReturning(false)}
+                      className="text-[11px] font-semibold text-ink underline underline-offset-2"
                     >
                       Not you?
                     </button>
@@ -371,7 +372,7 @@
 
                 {/* Username */}
                 <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">
+                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-ink mb-2">
                     Your username
                   </label>
                   <input
@@ -400,7 +401,7 @@
           </div>
 
           {/* Features */}
-          <div className="mt-6 space-y-3 text-sm text-muted font-light">
+          <div className="mt-6 space-y-3 text-sm text-ink font-light">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
               <span>Streak bonuses for consecutive answers</span>
@@ -424,14 +425,13 @@
           {parts[0]}
           <span
             style={{
-              display: 'inline',
-              color: '#1A1918',
-              fontWeight: 600,
-              letterSpacing: '0.15em',
-              margin: '0 2px',
-              whiteSpace: 'nowrap',
+              display: 'inline-block',
+              width: '90px',
+              borderBottom: '2px solid #1A1918',
+              margin: '0 4px 2px',
+              verticalAlign: 'bottom',
             }}
-          >. . . . .</span>
+          />
           {parts[1]}
         </p>
       )
@@ -792,13 +792,12 @@
         const picked   = shuffle(allTerms).slice(0, QUESTIONS_PER_GAME)
         setQuestions(picked)
 
-        // Resolve player — reuse stored ID if name matches, otherwise upsert
+        // Resolve player — look up by name in dictionary, otherwise upsert
         let resolvedId = null
+        const key = name.toLowerCase()
         try {
-          const saved = JSON.parse(localStorage.getItem('nod_player') || 'null')
-          if (saved?.id && saved.name.toLowerCase() === name.toLowerCase()) {
-            resolvedId = saved.id
-          }
+          const dict = JSON.parse(localStorage.getItem('nod_players') || '{}')
+          if (dict[key]) resolvedId = dict[key]
         } catch {}
 
         if (!resolvedId) {
@@ -808,7 +807,12 @@
 
         if (resolvedId) {
           setPlayerId(resolvedId)
-          try { localStorage.setItem('nod_player', JSON.stringify({ id: resolvedId, name, dept })) } catch {}
+          try {
+            const dict = JSON.parse(localStorage.getItem('nod_players') || '{}')
+            dict[key] = resolvedId
+            localStorage.setItem('nod_players', JSON.stringify(dict))
+            localStorage.setItem('nod_last_name', name)
+          } catch {}
         }
 
         // Reset state
