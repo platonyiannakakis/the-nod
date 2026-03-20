@@ -272,12 +272,18 @@
       if (!db || !playerId) return
       const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
       if (!p) return
+      const newGamesPlayed = p.games_played + 1
       await db.from('players').update({
         score: p.score + scoreGained,
         max_streak: Math.max(p.max_streak, maxStreak),
-        games_played: p.games_played + 1,
+        games_played: newGamesPlayed,
         updated_at: new Date().toISOString(),
       }).eq('id', playerId)
+      await db.from('game_sessions').insert({
+        player_id: playerId,
+        game_number: newGamesPlayed,
+        score: scoreGained,
+      })
     }
 
     async function dbFetchLeaderboard() {
