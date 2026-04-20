@@ -339,11 +339,11 @@
         <Cloud style={{ width:'clamp(90px,14vw,200px)',  height:'clamp(30px,5vw,68px)', top:'clamp(55px,8vh,100px)',  right:'-2vw', opacity:0.88 }} />
         <Cloud style={{ width:'clamp(70px,10vw,160px)',  height:'clamp(24px,4vw,54px)', top:'clamp(170px,22vh,250px)',right:'4vw',  opacity:0.72 }} />
         <Cloud style={{ width:'clamp(55px,8vw,130px)',   height:'clamp(18px,3vw,44px)', top:'clamp(200px,26vh,290px)',left:'5vw',   opacity:0.60 }} />
-        {/* Creatures — full bleed to edges */}
-        <Deco src={E.boat}   style={{ bottom:0,    right:0,   width:'clamp(220px,32vw,560px)' }} opacity={0.14} rotate={-4} />
-        <Deco src={E.cat}    style={{ bottom:'8%', left:0,    width:'clamp(140px,20vw,380px)' }} opacity={0.11} rotate={8} />
-        <Deco src={E.bird}   style={{ top:'28%',   left:0,    width:'clamp(90px,13vw,240px)'  }} opacity={0.09} rotate={-10} flip />
-        <Deco src={E.flower} style={{ top:'35%',   right:0,   width:'clamp(70px,10vw,180px)'  }} opacity={0.08} rotate={12} />
+        {/* Start — Left: bird(top:5%) + cat(bottom:8%) → gap 11dvh | Right: flower(top:35%) + boat(bottom:0) → gap 7dvh */}
+        <Deco src={E.boat}   style={{ bottom:0,   right:0, maxWidth:'clamp(220px,32vw,560px)', maxHeight:'38dvh' }} opacity={0.14} rotate={-4} />
+        <Deco src={E.cat}    style={{ bottom:'8%',left:0,  maxWidth:'clamp(140px,20vw,380px)', maxHeight:'38dvh' }} opacity={0.11} rotate={8} />
+        <Deco src={E.bird}   style={{ top:'5%',   left:0,  maxWidth:'clamp(90px,13vw,240px)',  maxHeight:'38dvh' }} opacity={0.09} rotate={-10} flip />
+        <Deco src={E.flower} style={{ top:'35%',  right:0, maxWidth:'clamp(70px,10vw,180px)',  maxHeight:'20dvh' }} opacity={0.08} rotate={12} />
       </>}>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.22em', textTransform:'uppercase', color:'rgba(26,25,24,0.45)', marginBottom:20, marginTop:0 }}>
           Navigation of Disciplines
@@ -417,9 +417,10 @@
     const [selected, setSelected] = useState(null)
     return (
       <Screen decos={<>
-        <Deco src={E.mantis}    style={{ bottom:0,    right:0,   width:'clamp(200px,30vw,520px)' }} opacity={0.13} rotate={-8} />
-        <Deco src={E.swordfish} style={{ top:'5%',    left:0,    width:'clamp(160px,25vw,440px)' }} opacity={0.10} rotate={12} />
-        <Deco src={E.flower}    style={{ bottom:'30%',left:0,    width:'clamp(70px,10vw,190px)'  }} opacity={0.09} rotate={-5} />
+        {/* Discipline — Left: swordfish(top:5%) + flower(bottom:30%) → gap 9dvh | Right: mantis alone */}
+        <Deco src={E.mantis}    style={{ bottom:0,     right:0, maxWidth:'clamp(200px,30vw,520px)', maxHeight:'55dvh' }} opacity={0.13} rotate={-8} />
+        <Deco src={E.swordfish} style={{ top:'5%',     left:0,  maxWidth:'clamp(160px,25vw,440px)', maxHeight:'28dvh' }} opacity={0.10} rotate={12} />
+        <Deco src={E.flower}    style={{ bottom:'30%', left:0,  maxWidth:'clamp(70px,10vw,190px)',  maxHeight:'28dvh' }} opacity={0.09} rotate={-5} />
       </>}>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:10, marginTop:0 }}>Step 2 of 2</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.4rem,6vw,4rem)', lineHeight:1, color:'#1A1918', margin:'0 0 10px' }}>
@@ -476,10 +477,10 @@
     const dept     = getDept(question.department)
     return (
       <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column' }} className="anim-up">
-        {/* Full-bleed creatures */}
-        <Deco src={E.bird}     style={{ top:0,     right:0,   width:'clamp(130px,20vw,360px)' }} opacity={0.10} rotate={-15} />
-        <Deco src={E.mushroom} style={{ bottom:0,  left:0,    width:'clamp(200px,30vw,520px)' }} opacity={0.11} rotate={8}  />
-        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,width:'clamp(100px,15vw,280px)' }} opacity={0.09} rotate={-8} />
+        {/* Challenge — Right: bird(top:0) + lizard(bottom:18%) → gap 10dvh | Left: mushroom alone */}
+        <Deco src={E.bird}     style={{ top:0,        right:0, maxWidth:'clamp(130px,20vw,360px)', maxHeight:'36dvh' }} opacity={0.10} rotate={-15} />
+        <Deco src={E.mushroom} style={{ bottom:0,     left:0,  maxWidth:'clamp(200px,30vw,520px)', maxHeight:'55dvh' }} opacity={0.11} rotate={8}  />
+        <Deco src={E.lizard}   style={{ bottom:'18%', right:0, maxWidth:'clamp(100px,15vw,280px)', maxHeight:'36dvh' }} opacity={0.09} rotate={-8} />
 
         {isCross && (
           <div style={{ background:'#F5B800', padding:'8px 20px', display:'flex', justifyContent:'center', position:'relative', zIndex:5 }}>
@@ -549,9 +550,10 @@
     const dept = getDept(question.department)
     return (
       <Screen className="anim-up" decos={<>
-        <Deco src={E.star}    style={{ bottom:0,    right:0,   width:'clamp(230px,35vw,600px)' }} opacity={0.12} rotate={20} />
-        <Deco src={E.octopus} style={{ top:'5%',    left:0,    width:'clamp(130px,18vw,340px)' }} opacity={0.10} rotate={-5} />
-        <Deco src={E.plane}   style={{ bottom:'25%',right:0,   width:'clamp(80px,12vw,220px)'  }} opacity={0.09} rotate={30} />
+        {/* Feedback — Right: plane(top:5%) + star(bottom:0) → gap 12dvh | Left: octopus alone */}
+        <Deco src={E.star}    style={{ bottom:0,   right:0, maxWidth:'clamp(230px,35vw,600px)', maxHeight:'55dvh' }} opacity={0.12} rotate={20} />
+        <Deco src={E.octopus} style={{ top:'5%',   left:0,  maxWidth:'clamp(130px,18vw,340px)', maxHeight:'55dvh' }} opacity={0.10} rotate={-5} />
+        <Deco src={E.plane}   style={{ top:'5%',   right:0, maxWidth:'clamp(80px,12vw,220px)',  maxHeight:'28dvh' }} opacity={0.09} rotate={30} />
       </>}>
         <div style={{ marginBottom:16 }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'10px 18px', borderRadius:100, background: isCorrect ? '#2A8A52' : '#B03030', color:'#fff' }}>
@@ -612,9 +614,10 @@
                        { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
     return (
       <Screen decos={<>
-        <Deco src={E.mammoth} style={{ bottom:0,    right:0,   width:'clamp(240px,35vw,580px)' }} opacity={0.12} rotate={-5} />
-        <Deco src={E.flower}  style={{ top:'8%',    left:0,    width:'clamp(150px,22vw,420px)' }} opacity={0.10} rotate={15} />
-        <Deco src={E.boat}    style={{ top:'3%',    right:0,   width:'clamp(80px,11vw,220px)'  }} opacity={0.08} rotate={10} />
+        {/* Summary — Right: boat(top:3%) + mammoth(bottom:0) → gap 19dvh | Left: flower alone */}
+        <Deco src={E.mammoth} style={{ bottom:0,  right:0, maxWidth:'clamp(240px,35vw,580px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-5} />
+        <Deco src={E.flower}  style={{ top:'8%',  left:0,  maxWidth:'clamp(150px,22vw,420px)', maxHeight:'55dvh' }} opacity={0.10} rotate={15} />
+        <Deco src={E.boat}    style={{ top:'3%',  right:0, maxWidth:'clamp(80px,11vw,220px)',  maxHeight:'28dvh' }} opacity={0.08} rotate={10} />
       </>}>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Results for</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.4rem,6vw,3.6rem)', color:'#1A1918', margin:'0 0 24px', lineHeight:1 }}>{playerName}</h2>
@@ -685,9 +688,10 @@
 
     return (
       <Screen decos={<>
-        <Deco src={E.thunder}   style={{ top:0,     right:0,   width:'clamp(190px,28vw,500px)' }} opacity={0.11} rotate={10} />
-        <Deco src={E.swordfish} style={{ bottom:0,  left:0,    width:'clamp(240px,36vw,620px)' }} opacity={0.12} rotate={-5} />
-        <Deco src={E.cat}       style={{ bottom:'22%',right:0, width:'clamp(80px,11vw,220px)'  }} opacity={0.09} rotate={15} />
+        {/* Leaderboard — Right: thunder(top:0) + cat(bottom:22%) → gap 10dvh | Left: swordfish alone */}
+        <Deco src={E.thunder}   style={{ top:0,        right:0, maxWidth:'clamp(190px,28vw,500px)', maxHeight:'34dvh' }} opacity={0.11} rotate={10} />
+        <Deco src={E.swordfish} style={{ bottom:0,     left:0,  maxWidth:'clamp(240px,36vw,620px)', maxHeight:'55dvh' }} opacity={0.12} rotate={-5} />
+        <Deco src={E.cat}       style={{ bottom:'22%', right:0, maxWidth:'clamp(80px,11vw,220px)',  maxHeight:'34dvh' }} opacity={0.09} rotate={15} />
       </>}>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>
           {month.toUpperCase()} · TOP {Math.min(leaders.length,3)}
@@ -748,9 +752,10 @@
 
     return (
       <Screen style={{ overflow:'hidden' }} decos={<>
-        <Deco src={E.octopus} style={{ bottom:0,    right:0,   width:'clamp(220px,32vw,560px)' }} opacity={0.12} rotate={-10} />
-        <Deco src={E.mantis}  style={{ top:'8%',    left:0,    width:'clamp(160px,24vw,440px)' }} opacity={0.10} rotate={20}  />
-        <Deco src={E.flower}  style={{ bottom:'30%',right:0,   width:'clamp(65px,9vw,180px)'   }} opacity={0.08} rotate={-8}  />
+        {/* Library — Right: flower(top:8%) + octopus(bottom:0) → gap 20dvh | Left: mantis alone */}
+        <Deco src={E.octopus} style={{ bottom:0,  right:0, maxWidth:'clamp(220px,32vw,560px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-10} />
+        <Deco src={E.mantis}  style={{ top:'8%',  left:0,  maxWidth:'clamp(160px,24vw,440px)', maxHeight:'55dvh' }} opacity={0.10} rotate={20}  />
+        <Deco src={E.flower}  style={{ top:'8%',  right:0, maxWidth:'clamp(65px,9vw,180px)',   maxHeight:'22dvh' }} opacity={0.08} rotate={-8}  />
       </>}>
         <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', fontSize:'0.85rem', color:'rgba(26,25,24,0.45)', textAlign:'left', marginBottom:12, padding:0 }}>← Back</button>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Your Glossary · {terms.length} terms</p>
@@ -800,9 +805,10 @@
     const since    = new Date().toLocaleString('default', { month:'long', year:'numeric' })
     return (
       <Screen decos={<>
-        <Deco src={E.mammoth} style={{ bottom:0,   right:0,   width:'clamp(260px,38vw,640px)' }} opacity={0.12} rotate={-8}  />
-        <Deco src={E.lizard}  style={{ top:'5%',   right:0,   width:'clamp(120px,18vw,340px)' }} opacity={0.10} rotate={20}  />
-        <Deco src={E.boat}    style={{ bottom:'28%',left:0,   width:'clamp(110px,16vw,300px)' }} opacity={0.09} rotate={10}  />
+        {/* Profile — Right: lizard(top:5%) + mammoth(bottom:0) → gap 13dvh | Left: boat alone */}
+        <Deco src={E.mammoth} style={{ bottom:0,    right:0, maxWidth:'clamp(260px,38vw,640px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-8}  />
+        <Deco src={E.lizard}  style={{ top:'5%',    right:0, maxWidth:'clamp(120px,18vw,340px)', maxHeight:'32dvh' }} opacity={0.10} rotate={20}  />
+        <Deco src={E.boat}    style={{ bottom:'28%',left:0,  maxWidth:'clamp(110px,16vw,300px)', maxHeight:'55dvh' }} opacity={0.09} rotate={10}  />
       </>}>
         <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', fontSize:'0.85rem', color:'rgba(26,25,24,0.45)', textAlign:'left', marginBottom:20, padding:0 }}>← Back</button>
 
@@ -848,10 +854,11 @@
     useEffect(() => { const t = setInterval(() => setCountdown(timeToMidnight()), 1000); return () => clearInterval(t) }, [])
     return (
       <Screen decos={<>
-        <Deco src={E.thunder}  style={{ top:0,     right:0,   width:'clamp(200px,30vw,520px)' }} opacity={0.13} rotate={15}  />
-        <Deco src={E.mountain} style={{ bottom:0,  left:0,    width:'clamp(280px,40vw,680px)' }} opacity={0.12} rotate={-5}  />
-        <Deco src={E.star}     style={{ bottom:'28%',right:0, width:'clamp(110px,17vw,320px)' }} opacity={0.10} rotate={30}  />
-        <Deco src={E.lizard}   style={{ top:'14%', left:0,    width:'clamp(70px,10vw,200px)'  }} opacity={0.08} rotate={10}  />
+        {/* DailyDone — Right: thunder(top:0) + star(bottom:28%) → gap 10dvh | Left: lizard(top:14%) + mountain(bottom:0) → gap 11dvh */}
+        <Deco src={E.thunder}  style={{ top:0,        right:0, maxWidth:'clamp(200px,30vw,520px)', maxHeight:'30dvh' }} opacity={0.13} rotate={15}  />
+        <Deco src={E.mountain} style={{ bottom:0,     left:0,  maxWidth:'clamp(280px,40vw,680px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-5}  />
+        <Deco src={E.star}     style={{ bottom:'28%', right:0, maxWidth:'clamp(110px,17vw,320px)', maxHeight:'32dvh' }} opacity={0.10} rotate={30}  />
+        <Deco src={E.lizard}   style={{ top:'14%',    left:0,  maxWidth:'clamp(70px,10vw,200px)',  maxHeight:'25dvh' }} opacity={0.08} rotate={10}  />
       </>}>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:12, marginTop:0 }}>Complete · Well done!</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.8rem,7vw,4.5rem)', color:'#1A1918', margin:'0 0 28px', lineHeight:1.05 }}>
