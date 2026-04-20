@@ -173,33 +173,32 @@
     )
   }
 
-  // ── ScreenDecos: 10 illustrations lining both sides of the screen ───────────
-  // Divided into 10 vertical bands (10vh each) → no vertical clustering.
-  // Horizontal offset is kept small (0–10% from edge) so illustrations live in
-  // the gutters beside the content column and never drift into the center.
+  // ── ScreenDecos: illustrations in the left/right gutters only ───────────────
+  // The content col is max-width:580px centered, so each gutter = 50vw - 290px.
+  // maxWidth uses exactly that formula → illustrations are PHYSICALLY INCAPABLE
+  // of reaching the content column at any viewport width.
+  // 10 vertical bands (10vh each) guarantee spread from top to bottom.
+  const GUTTER_W = 'clamp(70px, calc(50vw - 310px), 500px)'
+
   function ScreenDecos({ fixed = false }) {
     const [items] = useState(() => {
       const imgs      = shuffle(Object.values(E))
-      const bandOrder = shuffle([0,1,2,3,4,5,6,7,8,9])   // each band used exactly once
-      const sideList  = shuffle([0,0,0,0,0,1,1,1,1,1])   // exactly 5 left, 5 right
+      const bandOrder = shuffle([0,1,2,3,4,5,6,7,8,9])
+      const sideList  = shuffle([0,0,0,0,0,1,1,1,1,1])  // exactly 5 left, 5 right
       return Array.from({ length: 10 }, (_, i) => {
-        const topVh    = bandOrder[i] * 10 + Math.floor(Math.random() * 8)  // within band
-        const xPct     = Math.floor(Math.random() * 10)  // 0–10% — hug the edge
+        const topVh    = bandOrder[i] * 10 + Math.floor(Math.random() * 8)
         const useRight = sideList[i] === 1
-        const mHVh     = 28 + Math.floor(Math.random() * 40)    // 28–68vh
-        const mWPx     = 110 + Math.floor(Math.random() * 110)  // 110–220px floor
-        const mWVw     = 18  + Math.floor(Math.random() * 20)   // 18–38vw
-        const mWMax    = 320 + Math.floor(Math.random() * 320)  // 320–640px ceiling
+        const mHVh     = 30 + Math.floor(Math.random() * 42)  // 30–72vh
         return {
           src:     imgs[i % imgs.length],
-          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),    // ±20°
+          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),
           flip:    Math.random() > 0.5,
-          opacity: +(0.08 + Math.random() * 0.10).toFixed(2),   // 0.08–0.18
+          opacity: +(0.08 + Math.random() * 0.10).toFixed(2),
           posStyle: {
-            ...(useRight ? { right: `${xPct}%` } : { left: `${xPct}%` }),
+            ...(useRight ? { right: 0 } : { left: 0 }),
             top: `${topVh}vh`,
             maxHeight: `${mHVh}vh`,
-            maxWidth:  `clamp(${mWPx}px,${mWVw}vw,${mWMax}px)`,
+            maxWidth: GUTTER_W,
           },
         }
       })
@@ -542,10 +541,10 @@
           position:'absolute', inset:0, width:'100%', height:'100%',
           objectFit:'cover', objectPosition:'center', zIndex:0, pointerEvents:'none',
         }} />
-        {/* Illustrations — left: mushroom, right: bird + lizard */}
-        <Deco src={E.bird}     style={{ top:0,        right:'8%', maxWidth:'clamp(240px,36vw,600px)', maxHeight:'66vh' }} opacity={0.10} rotate={-15} />
-        <Deco src={E.mushroom} style={{ bottom:0,     left:'4%', maxWidth:'clamp(300px,45vw,780px)', maxHeight:'90vh' }} opacity={0.10} rotate={8}  />
-        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,   maxWidth:'clamp(195px,27vw,480px)', maxHeight:'60vh' }} opacity={0.09} rotate={-8} />
+        {/* Illustrations — left: mushroom, right: bird + lizard, all gutter-clamped */}
+        <Deco src={E.bird}     style={{ top:0,        right:0, maxWidth:GUTTER_W, maxHeight:'55vh' }} opacity={0.10} rotate={-15} />
+        <Deco src={E.mushroom} style={{ bottom:0,     left:0,  maxWidth:GUTTER_W, maxHeight:'75vh' }} opacity={0.10} rotate={8}  />
+        <Deco src={E.lizard}   style={{ bottom:'18%', right:0, maxWidth:GUTTER_W, maxHeight:'45vh' }} opacity={0.09} rotate={-8} />
 
         {isCross && (
           <div style={{ background:'#F5B800', padding:'8px 20px', display:'flex', justifyContent:'center', position:'relative', zIndex:5 }}>
