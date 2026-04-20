@@ -173,32 +173,30 @@
     )
   }
 
-  // ── ScreenDecos: 10 illustrations scattered randomly across the full screen ──
-  // No fixed zones — positions are re-randomised every time a screen mounts.
+  // ── ScreenDecos: 10 illustrations spread across the whole screen ───────────
+  // Screen is divided into 10 vertical bands (10vh each). One element lands in
+  // each band — guaranteed spread, no clustering. 5 left / 5 right, shuffled.
   function ScreenDecos({ fixed = false }) {
     const [items] = useState(() => {
-      const imgs = shuffle(Object.values(E))
+      const imgs      = shuffle(Object.values(E))
+      const bandOrder = shuffle([0,1,2,3,4,5,6,7,8,9])   // each band used exactly once
+      const sideList  = shuffle([0,0,0,0,0,1,1,1,1,1])   // exactly 5 left, 5 right
       return Array.from({ length: 10 }, (_, i) => {
-        // horizontal: left OR right, 0–62% inset so element is well inside the screen
-        const useRight = Math.random() > 0.5
-        const xPct     = Math.floor(Math.random() * 62)
-        // vertical: mostly top-anchored (0–85vh), occasionally bottom-anchored (0–20vh)
-        const useBot   = Math.random() > 0.78
-        const topVh    = Math.floor(Math.random() * 85)
-        const botVh    = Math.floor(Math.random() * 20)
-        // size: keep the large scale the user approved
-        const mHVh     = 28 + Math.floor(Math.random() * 40)      // 28–68vh
-        const mWPx     = 110 + Math.floor(Math.random() * 110)    // 110–220px floor
-        const mWVw     = 18  + Math.floor(Math.random() * 20)     // 18–38vw
-        const mWMax    = 320 + Math.floor(Math.random() * 320)    // 320–640px ceiling
+        const topVh  = bandOrder[i] * 10 + Math.floor(Math.random() * 8)  // within band
+        const xPct   = Math.floor(Math.random() * 58)   // 0–58% inset from chosen edge
+        const useRight = sideList[i] === 1
+        const mHVh   = 28 + Math.floor(Math.random() * 40)     // 28–68vh
+        const mWPx   = 110 + Math.floor(Math.random() * 110)   // 110–220px floor
+        const mWVw   = 18  + Math.floor(Math.random() * 20)    // 18–38vw
+        const mWMax  = 320 + Math.floor(Math.random() * 320)   // 320–640px ceiling
         return {
           src:     imgs[i % imgs.length],
-          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),      // ±20°
+          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),   // ±20°
           flip:    Math.random() > 0.5,
-          opacity: +(0.07 + Math.random() * 0.09).toFixed(2),     // 0.07–0.16
+          opacity: +(0.07 + Math.random() * 0.09).toFixed(2),  // 0.07–0.16
           posStyle: {
             ...(useRight ? { right: `${xPct}%` } : { left: `${xPct}%` }),
-            ...(useBot   ? { bottom: `${botVh}vh` } : { top: `${topVh}vh` }),
+            top: `${topVh}vh`,
             maxHeight: `${mHVh}vh`,
             maxWidth:  `clamp(${mWPx}px,${mWVw}vw,${mWMax}px)`,
           },
@@ -308,7 +306,11 @@
     }
     return a
   }
-  const todayStr = () => new Date().toISOString().slice(0,10)
+  // Use LOCAL date (not UTC) so midnight resets correctly in every timezone
+  const todayStr = () => {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+  }
   function timeToMidnight() {
     const now = new Date(), mid = new Date(now)
     mid.setHours(24,0,0,0)
@@ -1017,7 +1019,7 @@
           const key = (pendingName.current || playerName).toLowerCase()
           const today = todayStr()
           const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1)
-          const yStr = yesterday.toISOString().slice(0, 10)
+          const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`
           const lastPlayed = localStorage.getItem(`nod_played_${key}`)
           // If they played yesterday → consecutive streak, else reset to 1
           const newStreak = lastPlayed === yStr
