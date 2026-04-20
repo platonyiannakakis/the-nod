@@ -155,18 +155,18 @@
   // Using vh (not dvh) for Safari compatibility. Left/right offsets scatter
   // elements across the screen so they're not all pinned to the edges.
   const ZONES = [
-    // ── LEFT (varied inward offsets) ──
-    { left:'0',    top:'0vh',  mH:'20vh', mW:'clamp(70px,12vw,200px)'  },
-    { left:'8%',   top:'30vh', mH:'11vh', mW:'clamp(42px,7vw,120px)'   },
-    { left:'2%',   top:'47vh', mH:'13vh', mW:'clamp(52px,8vw,150px)'   },
-    { left:'10%',  top:'67vh', mH:'10vh', mW:'clamp(38px,6vw,100px)'   },
-    { left:'0',    bot:'0',    mH:'13vh', mW:'clamp(52px,8vw,160px)'   },
+    // ── LEFT (varied inward offsets) — all values × 3 ──
+    { left:'0',    top:'0vh',  mH:'60vh', mW:'clamp(210px,36vw,600px)'  },
+    { left:'8%',   top:'30vh', mH:'33vh', mW:'clamp(126px,21vw,360px)'  },
+    { left:'2%',   top:'47vh', mH:'39vh', mW:'clamp(156px,24vw,450px)'  },
+    { left:'10%',  top:'67vh', mH:'30vh', mW:'clamp(114px,18vw,300px)'  },
+    { left:'0',    bot:'0',    mH:'39vh', mW:'clamp(156px,24vw,480px)'  },
     // ── RIGHT (offset vertical rhythm for asymmetry) ──
-    { right:'8%',  top:'0vh',  mH:'13vh', mW:'clamp(52px,8vw,160px)'   },
-    { right:'0',   top:'20vh', mH:'10vh', mW:'clamp(38px,6vw,100px)'   },
-    { right:'5%',  top:'35vh', mH:'14vh', mW:'clamp(55px,9vw,170px)'   },
-    { right:'12%', top:'57vh', mH:'11vh', mW:'clamp(42px,7vw,130px)'   },
-    { right:'0',   bot:'0',    mH:'17vh', mW:'clamp(62px,10vw,210px)'  },
+    { right:'8%',  top:'0vh',  mH:'39vh', mW:'clamp(156px,24vw,480px)'  },
+    { right:'0',   top:'20vh', mH:'30vh', mW:'clamp(114px,18vw,300px)'  },
+    { right:'5%',  top:'35vh', mH:'42vh', mW:'clamp(165px,27vw,510px)'  },
+    { right:'12%', top:'57vh', mH:'33vh', mW:'clamp(126px,21vw,390px)'  },
+    { right:'0',   bot:'0',    mH:'51vh', mW:'clamp(186px,30vw,630px)'  },
   ]
 
   // ── Deco: entrance animation only — all randomness comes from ScreenDecos ─
@@ -538,9 +538,9 @@
     return (
       <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column' }} className="anim-up">
         {/* Challenge — Right: bird(top:0) + lizard(bottom:18%) → gap 10dvh | Left: mushroom alone */}
-        <Deco src={E.bird}     style={{ top:0,        right:'8%', maxWidth:'clamp(80px,12vw,200px)', maxHeight:'22vh' }} opacity={0.10} rotate={-15} />
-        <Deco src={E.mushroom} style={{ bottom:0,     left:'4%', maxWidth:'clamp(100px,15vw,260px)', maxHeight:'30vh' }} opacity={0.10} rotate={8}  />
-        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,   maxWidth:'clamp(65px,9vw,160px)',   maxHeight:'20vh' }} opacity={0.09} rotate={-8} />
+        <Deco src={E.bird}     style={{ top:0,        right:'8%', maxWidth:'clamp(240px,36vw,600px)', maxHeight:'66vh' }} opacity={0.10} rotate={-15} />
+        <Deco src={E.mushroom} style={{ bottom:0,     left:'4%', maxWidth:'clamp(300px,45vw,780px)', maxHeight:'90vh' }} opacity={0.10} rotate={8}  />
+        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,   maxWidth:'clamp(195px,27vw,480px)', maxHeight:'60vh' }} opacity={0.09} rotate={-8} />
 
         {isCross && (
           <div style={{ background:'#F5B800', padding:'8px 20px', display:'flex', justifyContent:'center', position:'relative', zIndex:5 }}>
