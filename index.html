@@ -15,7 +15,7 @@
       min-height: 100dvh;
       font-family: 'Cormorant Garamond', Georgia, serif;
       -webkit-font-smoothing: antialiased;
-      background: linear-gradient(180deg, #C0D4EA 0%, #F0ECE7 50%, #F7DCE7 100%) fixed;
+      background: #E8E8E8;
     }
     #root { min-height: 100dvh; display: flex; justify-content: center; }
 
@@ -143,31 +143,74 @@
     mammoth:   'ELEMENTS/IMG_1112.PNG',
   }
 
-  // Deco — animates in with random delay + random rotation variance each mount
+  // ── Backgrounds ──────────────────────────────────────────────────────────
+  const BACKGROUNDS = [
+    'background/1.jpg', 'background/2.jpg',
+    'background/3.jpg', 'background/4.jpg',
+  ]
+
+  // ── 10 non-overlapping zones (5 left + 5 right) ──────────────────────────
+  // Left: gaps of 2dvh between every zone. Right: different vertical rhythm.
+  // All images are 2048×2560 → height = width × 1.25. Math checked per zone.
+  const ZONES = [
+    // ── LEFT ──
+    { side:'left',  top:'0',     mH:'28dvh', mW:'clamp(110px,18vw,360px)' },  // bottom: 28
+    { side:'left',  top:'30dvh', mH:'15dvh', mW:'clamp(60px,10vw,190px)'  },  // gap:2  bottom:45
+    { side:'left',  top:'47dvh', mH:'18dvh', mW:'clamp(75px,13vw,250px)'  },  // gap:2  bottom:65
+    { side:'left',  top:'67dvh', mH:'13dvh', mW:'clamp(55px,9vw,155px)'   },  // gap:2  bottom:80
+    { side:'left',  bot:'0',     mH:'18dvh', mW:'clamp(75px,13vw,265px)'  },  // top:82 gap:2
+    // ── RIGHT (offset vertical rhythm for asymmetry) ──
+    { side:'right', top:'0',     mH:'18dvh', mW:'clamp(75px,13vw,265px)'  },  // bottom:18
+    { side:'right', top:'20dvh', mH:'13dvh', mW:'clamp(55px,9vw,155px)'   },  // gap:2  bottom:33
+    { side:'right', top:'35dvh', mH:'20dvh', mW:'clamp(85px,15vw,285px)'  },  // gap:2  bottom:55
+    { side:'right', top:'57dvh', mH:'15dvh', mW:'clamp(65px,10vw,200px)'  },  // gap:2  bottom:72
+    { side:'right', bot:'0',     mH:'25dvh', mW:'clamp(100px,17vw,360px)' },  // top:75 gap:3
+  ]
+
+  // ── Deco: entrance animation only — all randomness comes from ScreenDecos ─
   function Deco({ src, style = {}, opacity = 0.13, rotate = 0, flip = false }) {
-    // New random values every time this screen mounts
-    const [delay]  = useState(() => +(Math.random() * 0.55).toFixed(2))
-    const [rotVar] = useState(() => +((Math.random() - 0.5) * 14).toFixed(1))
-
-    // Position/layout props go on the animated wrapper div
-    // Size constraints go on the img so aspect-ratio scaling works correctly
+    const [delay] = useState(() => +(Math.random() * 0.65).toFixed(2))
     const { maxWidth, maxHeight, width, height, ...wrapStyle } = style
-
     return (
       <div style={{
         position:'absolute', pointerEvents:'none', userSelect:'none',
-        animation:`decoIn 1s cubic-bezier(0.22,1,0.36,1) ${delay}s both`,
+        animation:`decoIn 1.1s cubic-bezier(0.22,1,0.36,1) ${delay}s both`,
         ...wrapStyle,
       }}>
         <img src={src} alt="" aria-hidden="true" style={{
-          display:'block',
-          opacity, mixBlendMode:'multiply',
-          transform:`rotate(${rotate + rotVar}deg) scaleX(${flip ? -1 : 1})`,
+          display:'block', opacity, mixBlendMode:'multiply',
+          transform:`rotate(${rotate}deg) scaleX(${flip ? -1 : 1})`,
           maxWidth, maxHeight,
-          ...(width  ? { width  } : {}),
-          ...(height ? { height } : {}),
+          ...(width ? {width} : {}), ...(height ? {height} : {}),
         }} />
       </div>
+    )
+  }
+
+  // ── ScreenDecos: 10 illustrations, fully random each mount ──────────────
+  function ScreenDecos() {
+    const [items] = useState(() => {
+      const imgs = shuffle(Object.values(E))   // random order from all 14
+      return ZONES.map((z, i) => ({
+        src:     imgs[i % imgs.length],
+        rotate:  +((Math.random() - 0.5) * 32).toFixed(1),   // ±16°
+        flip:    Math.random() > 0.5,
+        opacity: +(0.07 + Math.random() * 0.09).toFixed(2),  // 0.07–0.16
+        posStyle: {
+          ...(z.side === 'left' ? { left:0 } : { right:0 }),
+          ...(z.top !== undefined ? { top:z.top } : { bottom:z.bot }),
+          maxHeight: z.mH,
+          maxWidth:  z.mW,
+        },
+      }))
+    })
+    return (
+      <>
+        {items.map((it, i) => (
+          <Deco key={i} src={it.src} style={it.posStyle}
+            opacity={it.opacity} rotate={it.rotate} flip={it.flip} />
+        ))}
+      </>
     )
   }
 
@@ -309,13 +352,20 @@
   }
 
   // ══════════════════════════════════════════
-  // SCREEN WRAPPER — full-bleed bg + centered col
+  // SCREEN WRAPPER — random bg image + 10 auto decos + centered col
   // ══════════════════════════════════════════
-  function Screen({ children, decos, style = {} }) {
+  function Screen({ children, style = {} }) {
+    const [bg] = useState(() => BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)])
     return (
       <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column', ...style }}>
-        {decos}
-        <div className="col" style={{ position:'relative', zIndex:2, flex:1, display:'flex', flexDirection:'column', padding:'52px 20px 36px' }}>
+        {/* Background photo — full screen, no overlay */}
+        <img src={bg} alt="" aria-hidden="true" style={{
+          position:'absolute', inset:0, width:'100%', height:'100%',
+          objectFit:'cover', objectPosition:'center', zIndex:0, pointerEvents:'none',
+        }} />
+        {/* 10 random illustrations */}
+        <ScreenDecos />
+        <div className="col" style={{ position:'relative', zIndex:3, flex:1, display:'flex', flexDirection:'column', padding:'52px 20px 36px' }}>
           {children}
         </div>
       </div>
@@ -353,18 +403,7 @@
     const onSubmit = (e) => { e.preventDefault(); if (canSubmit) onStart(name.trim()) }
 
     return (
-      <Screen decos={<>
-        {/* Clouds */}
-        <Cloud style={{ width:'clamp(120px,18vw,260px)', height:'clamp(40px,6vw,88px)', top:'clamp(80px,12vh,140px)', left:'-3vw', opacity:0.95 }} />
-        <Cloud style={{ width:'clamp(90px,14vw,200px)',  height:'clamp(30px,5vw,68px)', top:'clamp(55px,8vh,100px)',  right:'-2vw', opacity:0.88 }} />
-        <Cloud style={{ width:'clamp(70px,10vw,160px)',  height:'clamp(24px,4vw,54px)', top:'clamp(170px,22vh,250px)',right:'4vw',  opacity:0.72 }} />
-        <Cloud style={{ width:'clamp(55px,8vw,130px)',   height:'clamp(18px,3vw,44px)', top:'clamp(200px,26vh,290px)',left:'5vw',   opacity:0.60 }} />
-        {/* Start — Left: bird(top:5%) + cat(bottom:8%) → gap 11dvh | Right: flower(top:35%) + boat(bottom:0) → gap 7dvh */}
-        <Deco src={E.boat}   style={{ bottom:0,   right:0, maxWidth:'clamp(220px,32vw,560px)', maxHeight:'38dvh' }} opacity={0.14} rotate={-4} />
-        <Deco src={E.cat}    style={{ bottom:'8%',left:0,  maxWidth:'clamp(140px,20vw,380px)', maxHeight:'38dvh' }} opacity={0.11} rotate={8} />
-        <Deco src={E.bird}   style={{ top:'5%',   left:0,  maxWidth:'clamp(90px,13vw,240px)',  maxHeight:'38dvh' }} opacity={0.09} rotate={-10} flip />
-        <Deco src={E.flower} style={{ top:'35%',  right:0, maxWidth:'clamp(70px,10vw,180px)',  maxHeight:'20dvh' }} opacity={0.08} rotate={12} />
-      </>}>
+      <Screen>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.22em', textTransform:'uppercase', color:'rgba(26,25,24,0.45)', marginBottom:20, marginTop:0 }}>
           Navigation of Disciplines
         </p>
@@ -436,12 +475,7 @@
   function DisciplineScreen({ onSelect }) {
     const [selected, setSelected] = useState(null)
     return (
-      <Screen decos={<>
-        {/* Discipline — Left: swordfish(top:5%) + flower(bottom:30%) → gap 9dvh | Right: mantis alone */}
-        <Deco src={E.mantis}    style={{ bottom:0,     right:0, maxWidth:'clamp(200px,30vw,520px)', maxHeight:'55dvh' }} opacity={0.13} rotate={-8} />
-        <Deco src={E.swordfish} style={{ top:'5%',     left:0,  maxWidth:'clamp(160px,25vw,440px)', maxHeight:'28dvh' }} opacity={0.10} rotate={12} />
-        <Deco src={E.flower}    style={{ bottom:'30%', left:0,  maxWidth:'clamp(70px,10vw,190px)',  maxHeight:'28dvh' }} opacity={0.09} rotate={-5} />
-      </>}>
+      <Screen>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:10, marginTop:0 }}>Step 2 of 2</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.4rem,6vw,4rem)', lineHeight:1, color:'#1A1918', margin:'0 0 10px' }}>
           Pick your<br/>home team.
@@ -569,12 +603,7 @@
   function FeedbackScreen({ question, selectedAnswer, isCorrect, streak, onNext, isLast }) {
     const dept = getDept(question.department)
     return (
-      <Screen className="anim-up" decos={<>
-        {/* Feedback — Right: plane(top:5%) + star(bottom:0) → gap 12dvh | Left: octopus alone */}
-        <Deco src={E.star}    style={{ bottom:0,   right:0, maxWidth:'clamp(230px,35vw,600px)', maxHeight:'55dvh' }} opacity={0.12} rotate={20} />
-        <Deco src={E.octopus} style={{ top:'5%',   left:0,  maxWidth:'clamp(130px,18vw,340px)', maxHeight:'55dvh' }} opacity={0.10} rotate={-5} />
-        <Deco src={E.plane}   style={{ top:'5%',   right:0, maxWidth:'clamp(80px,12vw,220px)',  maxHeight:'28dvh' }} opacity={0.09} rotate={30} />
-      </>}>
+      <Screen className="anim-up">
         <div style={{ marginBottom:16 }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'10px 18px', borderRadius:100, background: isCorrect ? '#2A8A52' : '#B03030', color:'#fff' }}>
             <span style={{ fontWeight:800, fontSize:'0.95rem' }}>{isCorrect ? '✓' : '✗'}</span>
@@ -633,12 +662,7 @@
       accuracy >= 50 ? { emoji:'🤔', msg:'Some nodding happening. Keep playing.' } :
                        { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
     return (
-      <Screen decos={<>
-        {/* Summary — Right: boat(top:3%) + mammoth(bottom:0) → gap 19dvh | Left: flower alone */}
-        <Deco src={E.mammoth} style={{ bottom:0,  right:0, maxWidth:'clamp(240px,35vw,580px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-5} />
-        <Deco src={E.flower}  style={{ top:'8%',  left:0,  maxWidth:'clamp(150px,22vw,420px)', maxHeight:'55dvh' }} opacity={0.10} rotate={15} />
-        <Deco src={E.boat}    style={{ top:'3%',  right:0, maxWidth:'clamp(80px,11vw,220px)',  maxHeight:'28dvh' }} opacity={0.08} rotate={10} />
-      </>}>
+      <Screen>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Results for</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.4rem,6vw,3.6rem)', color:'#1A1918', margin:'0 0 24px', lineHeight:1 }}>{playerName}</h2>
 
@@ -707,12 +731,7 @@
     const pH     = ['clamp(70px,10vw,110px)', 'clamp(100px,14vw,150px)', 'clamp(55px,8vw,90px)']
 
     return (
-      <Screen decos={<>
-        {/* Leaderboard — Right: thunder(top:0) + cat(bottom:22%) → gap 10dvh | Left: swordfish alone */}
-        <Deco src={E.thunder}   style={{ top:0,        right:0, maxWidth:'clamp(190px,28vw,500px)', maxHeight:'34dvh' }} opacity={0.11} rotate={10} />
-        <Deco src={E.swordfish} style={{ bottom:0,     left:0,  maxWidth:'clamp(240px,36vw,620px)', maxHeight:'55dvh' }} opacity={0.12} rotate={-5} />
-        <Deco src={E.cat}       style={{ bottom:'22%', right:0, maxWidth:'clamp(80px,11vw,220px)',  maxHeight:'34dvh' }} opacity={0.09} rotate={15} />
-      </>}>
+      <Screen>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>
           {month.toUpperCase()} · TOP {Math.min(leaders.length,3)}
         </p>
@@ -771,12 +790,7 @@
     const visible = filter === 'All' ? terms : terms.filter(t => t.department === filter)
 
     return (
-      <Screen style={{ overflow:'hidden' }} decos={<>
-        {/* Library — Right: flower(top:8%) + octopus(bottom:0) → gap 20dvh | Left: mantis alone */}
-        <Deco src={E.octopus} style={{ bottom:0,  right:0, maxWidth:'clamp(220px,32vw,560px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-10} />
-        <Deco src={E.mantis}  style={{ top:'8%',  left:0,  maxWidth:'clamp(160px,24vw,440px)', maxHeight:'55dvh' }} opacity={0.10} rotate={20}  />
-        <Deco src={E.flower}  style={{ top:'8%',  right:0, maxWidth:'clamp(65px,9vw,180px)',   maxHeight:'22dvh' }} opacity={0.08} rotate={-8}  />
-      </>}>
+      <Screen style={{ overflow:'hidden' }}>
         <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', fontSize:'0.85rem', color:'rgba(26,25,24,0.45)', textAlign:'left', marginBottom:12, padding:0 }}>← Back</button>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Your Glossary · {terms.length} terms</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.2rem,5vw,3rem)', color:'#1A1918', margin:'0 0 16px', lineHeight:1 }}>Words,<br/>collected.</h2>
@@ -824,12 +838,7 @@
     const accuracy = stats ? Math.round(((stats.score / PTS_CORRECT) / Math.max(stats.games_played * QUESTIONS_PER_GAME, 1)) * 100) : 0
     const since    = new Date().toLocaleString('default', { month:'long', year:'numeric' })
     return (
-      <Screen decos={<>
-        {/* Profile — Right: lizard(top:5%) + mammoth(bottom:0) → gap 13dvh | Left: boat alone */}
-        <Deco src={E.mammoth} style={{ bottom:0,    right:0, maxWidth:'clamp(260px,38vw,640px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-8}  />
-        <Deco src={E.lizard}  style={{ top:'5%',    right:0, maxWidth:'clamp(120px,18vw,340px)', maxHeight:'32dvh' }} opacity={0.10} rotate={20}  />
-        <Deco src={E.boat}    style={{ bottom:'28%',left:0,  maxWidth:'clamp(110px,16vw,300px)', maxHeight:'55dvh' }} opacity={0.09} rotate={10}  />
-      </>}>
+      <Screen>
         <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', fontSize:'0.85rem', color:'rgba(26,25,24,0.45)', textAlign:'left', marginBottom:20, padding:0 }}>← Back</button>
 
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:20 }}>
@@ -873,13 +882,7 @@
     const [countdown, setCountdown] = useState(timeToMidnight())
     useEffect(() => { const t = setInterval(() => setCountdown(timeToMidnight()), 1000); return () => clearInterval(t) }, [])
     return (
-      <Screen decos={<>
-        {/* DailyDone — Right: thunder(top:0) + star(bottom:28%) → gap 10dvh | Left: lizard(top:14%) + mountain(bottom:0) → gap 11dvh */}
-        <Deco src={E.thunder}  style={{ top:0,        right:0, maxWidth:'clamp(200px,30vw,520px)', maxHeight:'30dvh' }} opacity={0.13} rotate={15}  />
-        <Deco src={E.mountain} style={{ bottom:0,     left:0,  maxWidth:'clamp(280px,40vw,680px)', maxHeight:'50dvh' }} opacity={0.12} rotate={-5}  />
-        <Deco src={E.star}     style={{ bottom:'28%', right:0, maxWidth:'clamp(110px,17vw,320px)', maxHeight:'32dvh' }} opacity={0.10} rotate={30}  />
-        <Deco src={E.lizard}   style={{ top:'14%',    left:0,  maxWidth:'clamp(70px,10vw,200px)',  maxHeight:'25dvh' }} opacity={0.08} rotate={10}  />
-      </>}>
+      <Screen>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:12, marginTop:0 }}>Complete · Well done!</p>
         <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.8rem,7vw,4.5rem)', color:'#1A1918', margin:'0 0 28px', lineHeight:1.05 }}>
           See you<br/>tomorrow.
