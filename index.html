@@ -3,884 +3,991 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="theme-color" content="#EBEBEB" />
+  <meta name="theme-color" content="#C0D4EA" />
   <title>The NOD</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            bg:      '#EBEBEB',
-            surface: '#FFFFFF',
-            ink:     '#1A1918',
-            muted:   '#8A8A88',
-            field:   '#F0EFED',
-            amber:   { DEFAULT: '#F5B800', light: '#FFF7D6' },
-            correct: '#2D9E5F',
-            wrong:   '#D94F4F',
-          },
-          fontFamily: { sans: ['Cormorant Garamond', 'Georgia', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'] },
-          borderRadius: {
-            card: '20px',
-            btn:  '14px',
-            pill: '100px',
-          },
-          boxShadow: {
-            card:  '0 2px 16px rgba(0,0,0,0.07)',
-            'card-hover': '0 4px 24px rgba(0,0,0,0.11)',
-          },
-          keyframes: {
-            'slide-up': {
-              '0%':   { transform: 'translateY(18px)', opacity: '0' },
-              '100%': { transform: 'translateY(0)',    opacity: '1' },
-            },
-            'fade-in': {
-              '0%':   { opacity: '0' },
-              '100%': { opacity: '1' },
-            },
-          },
-          animation: {
-            'slide-up': 'slide-up 0.28s cubic-bezier(0.22,1,0.36,1)',
-            'fade-in':  'fade-in 0.2s ease-out',
-          },
-        },
-      },
-    }
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet" />
   <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-    html, body { background: #EBEBEB; margin: 0; font-family: 'Cormorant Garamond', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'; -webkit-font-smoothing: antialiased; }
-    #root { min-height: 100dvh; display: flex; justify-content: center; align-items: stretch; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+      background: linear-gradient(180deg, #C0D4EA 0%, #F0ECE7 50%, #F7DCE7 100%) fixed;
+    }
+    #root { min-height: 100dvh; display: flex; justify-content: center; }
 
     .btn-primary {
-      background: #1A1918;
-      color: #fff;
-      font-weight: 600;
-      font-size: 1rem;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: opacity 0.12s, transform 0.1s;
-      user-select: none;
-      letter-spacing: 0.01em;
+      background: #1A1918; color: #fff; font-weight: 600; font-size: 1.05rem;
+      border: none; border-radius: 14px; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      transition: opacity 0.12s, transform 0.1s; user-select: none; letter-spacing: 0.01em;
     }
     .btn-primary:active  { opacity: 0.85; transform: scale(0.985); }
     .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
 
-    .btn-secondary {
-      background: #F0EFED;
-      color: #1A1918;
-      font-weight: 600;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: opacity 0.12s, transform 0.1s;
-      user-select: none;
+    .btn-ghost {
+      background: transparent; color: #1A1918; font-weight: 500; font-size: 0.95rem;
+      border: none; cursor: pointer; font-family: 'Cormorant Garamond', serif;
+      transition: opacity 0.12s; user-select: none; text-align: center;
     }
-    .btn-secondary:active { opacity: 0.75; transform: scale(0.985); }
+    .btn-ghost:active { opacity: 0.6; }
 
     .option-btn {
-      background: #fff;
-      color: #1A1918;
-      font-weight: 500;
-      border: 1.5px solid transparent;
-      border-radius: 16px;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
-      cursor: pointer;
-      transition: box-shadow 0.12s, transform 0.1s, border-color 0.1s;
-      user-select: none;
-      text-align: left;
-      width: 100%;
+      background: rgba(255,255,255,0.88); color: #1A1918; font-weight: 500;
+      border: 1.5px solid transparent; border-radius: 16px;
+      box-shadow: 0 1px 10px rgba(0,0,0,0.07); cursor: pointer;
+      transition: box-shadow 0.12s, transform 0.1s;
+      user-select: none; text-align: left; width: 100%;
+      font-family: 'Cormorant Garamond', serif;
     }
-    .option-btn:active { transform: scale(0.985); box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .option-btn:active { transform: scale(0.985); }
+
+    .card {
+      background: rgba(255,255,255,0.88);
+      border-radius: 20px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    /* Content column — narrow on mobile, wider on desktop */
+    .col {
+      width: 100%;
+      max-width: min(580px, calc(100vw - 40px));
+      margin: 0 auto;
+    }
 
     input:focus { outline: none; }
-    input::placeholder { color: #BEBDBA; }
-
+    input::placeholder { color: rgba(26,25,24,0.32); }
     ::-webkit-scrollbar { display: none; }
+
+    @keyframes slide-up {
+      from { transform: translateY(18px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin     { to   { transform: rotate(360deg); } }
+
+    .anim-up   { animation: slide-up 0.3s cubic-bezier(0.22,1,0.36,1); }
+    .anim-fade { animation: fade-in 0.25s ease-out; }
+
+    /* CSS cloud */
+    .nod-cloud {
+      position: absolute;
+      background: white;
+      border-radius: 50px;
+      box-shadow: 0 6px 24px rgba(180,200,230,0.25);
+    }
+    .nod-cloud::before, .nod-cloud::after {
+      content: ''; position: absolute; background: white; border-radius: 50%;
+    }
+    .nod-cloud::before { width: 58%; height: 170%; top: -55%; left: 14%; }
+    .nod-cloud::after  { width: 44%; height: 135%; top: -32%; right: 14%; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+<div id="root"></div>
 
-  <!-- React + ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <!-- Babel for JSX in-browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script type="text/babel">
-    const { useState, useEffect, useCallback } = React
+<script type="text/babel">
+  const { useState, useEffect, useCallback } = React
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // CONFIGURATION — paste your Supabase credentials here
-    // ══════════════════════════════════════════════════════════════════════════
-    const SUPABASE_URL = 'https://iruynozvvheszovfqkqu.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydXlub3p2dmhlc3pvdmZxa3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzcyMjMsImV4cCI6MjA4OTUxMzIyM30.IEVOcGV0PJEmZaKYJv667ZmIum6ILK3aIZBsYrniYkg'
+  // ══════════════════════════════════════════
+  // CONFIG
+  // ══════════════════════════════════════════
+  const SUPABASE_URL = 'https://iruynozvvheszovfqkqu.supabase.co'
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydXlub3p2dmhlc3pvdmZxa3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzcyMjMsImV4cCI6MjA4OTUxMzIyM30.IEVOcGV0PJEmZaKYJv667ZmIum6ILK3aIZBsYrniYkg'
+  const db = (SUPABASE_URL && SUPABASE_KEY) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null
 
-    const db = (SUPABASE_URL && SUPABASE_KEY)
-      ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-      : null
+  const QUESTIONS_PER_GAME = 10
+  const PTS_CORRECT        = 10
+  const STREAK_BONUS_AT    = 3
+  const STREAK_BONUS       = 5
+  const CROSS_BONUS        = 5
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // CONSTANTS
-    // ══════════════════════════════════════════════════════════════════════════
-    const QUESTIONS_PER_GAME = 10
-    const PTS_CORRECT        = 10
-    const STREAK_BONUS_AT    = 3
-    const STREAK_BONUS       = 5
+  const DISCIPLINES = [
+    { name:'Agile',              color:'#D4A017', dot:'#F5C842' },
+    { name:'Post-Production',    color:'#A85C30', dot:'#C8784A' },
+    { name:'Design',             color:'#2A8A52', dot:'#3DB870' },
+    { name:'Project Management', color:'#4060B0', dot:'#6080D0' },
+    { name:'Marketing',          color:'#A030A0', dot:'#C050C0' },
+    { name:'Operations',         color:'#6050B0', dot:'#8070D0' },
+    { name:'Engineering',        color:'#B03030', dot:'#D05050' },
+  ]
+  const getDept = (name) =>
+    DISCIPLINES.find(d => d.name === name) ?? { name: name || 'Other', color:'#8A8A88', dot:'#AAAAAA' }
 
-    const DEPARTMENTS = ['Agile', 'Post-Production', 'Design']
+  const E = {
+    boat:      'ELEMENTS/IMG_1099.PNG',
+    cat:       'ELEMENTS/IMG_1100.PNG',
+    mantis:    'ELEMENTS/IMG_1101.PNG',
+    swordfish: 'ELEMENTS/IMG_1102.PNG',
+    lizard:    'ELEMENTS/IMG_1103.PNG',
+    bird:      'ELEMENTS/IMG_1104.PNG',
+    flower:    'ELEMENTS/IMG_1105.PNG',
+    octopus:   'ELEMENTS/IMG_1106.PNG',
+    mushroom:  'ELEMENTS/IMG_1107.PNG',
+    plane:     'ELEMENTS/IMG_1108.PNG',
+    thunder:   'ELEMENTS/IMG_1109.PNG',
+    star:      'ELEMENTS/IMG_1110.PNG',
+    mountain:  'ELEMENTS/IMG_1111.PNG',
+    mammoth:   'ELEMENTS/IMG_1112.PNG',
+  }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // FALLBACK TERMS — used when Supabase is not configured
-    // ══════════════════════════════════════════════════════════════════════════
-    const FALLBACK_TERMS = [
-      // ── AGILE ──────────────────────────────────────────────────────────────
-      { id:'a1', term:'Sprint', department:'Agile',
-        cloze: "The team committed to shipping the redesigned homepage within the next _____, a two-week cycle starting Monday.",
-        options: ['Sprint', 'Backlog', 'Standup', 'Retrospective'],
-        correct_index: 0,
-        explanation: 'A Sprint is a time-boxed period — typically 1–2 weeks — where the team commits to completing a defined set of tasks. At the end, they review what was built and plan the next one.' },
-      { id:'a2', term:'Backlog', department:'Agile',
-        cloze: "Before planning began, the product owner sorted the _____ and moved the checkout bug all the way to the top.",
-        options: ['Velocity', 'Backlog', 'Story Points', 'Sprint'],
-        correct_index: 1,
-        explanation: 'The backlog is the master list of features, bug fixes, and tasks ordered by priority. The product owner decides what goes to the top.' },
-      { id:'a3', term:'Velocity', department:'Agile',
-        cloze: "After three sprints of data, the team\'s _____ averaged 34 points — enough to forecast the launch date with confidence.",
-        options: ['Story Points', 'Sprint', 'Velocity', 'Standup'],
-        correct_index: 2,
-        explanation: 'Velocity is how much work a team finishes in a sprint, measured in story points. Tracking it over time helps predict how much the team can commit to in future sprints.' },
-      { id:'a4', term:'Standup', department:'Agile',
-        cloze: "Every morning at 9am the team held a 15-minute _____ to share what they were working on and flag any blockers.",
-        options: ['Retrospective', 'Standup', 'Sprint', 'Backlog'],
-        correct_index: 1,
-        explanation: 'The daily standup (15 min max) keeps the team aligned. Each person answers: what did I do, what will I do today, am I blocked?' },
-      { id:'a5', term:'Retrospective', department:'Agile',
-        cloze: "At the end of the sprint, the whole team gathered for a _____ to reflect on what went well and what to change.",
-        options: ['Standup', 'Story Points', 'Backlog', 'Retrospective'],
-        correct_index: 3,
-        explanation: 'The retro is how Agile teams continuously improve. They look back on the sprint and agree on one or two things to do differently next time.' },
-      { id:'a6', term:'Story Points', department:'Agile',
-        cloze: "The engineer estimated the new search feature at eight _____, accounting for the API complexity and edge cases.",
-        options: ['Story Points', 'Velocity', 'Sprint', 'Standup'],
-        correct_index: 0,
-        explanation: 'Story points estimate relative effort — not hours. Teams use scales like Fibonacci (1, 2, 3, 5, 8) based on complexity and uncertainty.' },
-      // ── POST-PRODUCTION ────────────────────────────────────────────────────
-      { id:'p1', term:'Rough Cut', department:'Post-Production',
-        cloze: "The director sat down to review the _____ — a first assembly of all the clips in sequence, without colour or sound polish.",
-        options: ['Colour Grade', 'Rough Cut', 'Timecode', 'B-Roll'],
-        correct_index: 1,
-        explanation: 'The rough cut is the first full assembly. Clips are in sequence but transitions, colour, and sound aren\'t polished. It\'s used to check structure and pacing.' },
-      { id:'p2', term:'Colour Grade', department:'Post-Production',
-        cloze: "Once the edit was locked, the colourist began the _____, giving the film its signature warm, golden look.",
-        options: ['Rough Cut', 'VFX', 'Foley', 'Colour Grade'],
-        correct_index: 3,
-        explanation: 'Colour grading defines the visual mood of a film. Editors adjust exposure, contrast, and hue to create a consistent aesthetic — warm tones for drama, cold blues for thrillers.' },
-      { id:'p3', term:'B-Roll', department:'Post-Production',
-        cloze: "The interview felt flat on its own, so the editor cut in _____ of the city streets and the product being used.",
-        options: ['B-Roll', 'Foley', 'Timecode', 'VFX'],
-        correct_index: 0,
-        explanation: 'B-roll is all the supporting footage — city streets, product close-ups, hands typing — cut over interviews to keep visuals interesting and illustrate what\'s being said.' },
-      { id:'p4', term:'Foley', department:'Post-Production',
-        cloze: "The footsteps in the recording were too quiet, so a _____ artist re-recorded them on a wooden floor to match the picture.",
-        options: ['VFX', 'Timecode', 'Foley', 'Rough Cut'],
-        correct_index: 2,
-        explanation: 'Foley artists recreate everyday sounds — footsteps, rustling fabric, creaking doors — in a studio, in sync with the picture, to add texture to the audio mix.' },
-      { id:'p5', term:'Timecode', department:'Post-Production',
-        cloze: "The editor asked the client to reference the _____ when leaving notes, so they could pinpoint the exact frame they meant.",
-        options: ['Colour Grade', 'Timecode', 'B-Roll', 'Rough Cut'],
-        correct_index: 1,
-        explanation: 'Timecode (HH:MM:SS:FF) is stamped on every frame. It lets editors and clients reference exact moments — "cut at 01:22:14:08" — with frame-level precision.' },
-      { id:'p6', term:'VFX', department:'Post-Production',
-        cloze: "The explosion on set was too small, so the _____ team extended it digitally in post to fill the entire frame.",
-        options: ['Foley', 'Timecode', 'Rough Cut', 'VFX'],
-        correct_index: 3,
-        explanation: 'VFX are digital elements added after filming — CGI, compositing, environment extensions. Unlike practical SFX (on-set), VFX happen entirely in post-production.' },
-      // ── DESIGN ─────────────────────────────────────────────────────────────
-      { id:'d1', term:'Kerning', department:'Design',
-        cloze: "The logo looked slightly off until the designer adjusted the _____ between the 'A' and 'V', closing the awkward gap.",
-        options: ['Kerning', 'Bleed', 'Visual Hierarchy', 'Wireframe'],
-        correct_index: 0,
-        explanation: 'Kerning fine-tunes the space between two specific letters. Poor kerning looks uneven; good kerning is invisible — it just feels right, especially in headlines and logos.' },
-      { id:'d2', term:'Wireframe', department:'Design',
-        cloze: "Before adding any colour or imagery, the UX team shared a _____ showing exactly where each button and text block would sit.",
-        options: ['Pantone', 'Gestalt', 'Wireframe', 'Bleed'],
-        correct_index: 2,
-        explanation: 'A wireframe is a greyscale layout showing where elements will go — without colours or imagery. It helps teams agree on structure and flow before visual design begins.' },
-      { id:'d3', term:'Bleed', department:'Design',
-        cloze: "The printer warned that without a 3mm _____, a white border would appear along the edge once the pages were trimmed.",
-        options: ['Kerning', 'Bleed', 'Pantone', 'Visual Hierarchy'],
-        correct_index: 1,
-        explanation: 'Bleed is the extra 3mm that extends artwork beyond the cut line. Since cutting isn\'t perfectly precise, bleed ensures colours reach the very edge of the finished piece.' },
-      { id:'d4', term:'Pantone', department:'Design',
-        cloze: "To keep the brand red consistent across every market, the packaging spec included a specific _____ colour code.",
-        options: ['Gestalt', 'Wireframe', 'Pantone', 'Kerning'],
-        correct_index: 2,
-        explanation: 'Pantone (PMS) is the global standard for specifying ink colours. "Pantone 186 C" means exactly the same red to every printer in the world, regardless of monitor calibration.' },
-      { id:'d5', term:'Gestalt', department:'Design',
-        cloze: "Using _____ principles, the designer grouped related options visually so users could scan the form without reading every label.",
-        options: ['Bleed', 'Visual Hierarchy', 'Wireframe', 'Gestalt'],
-        correct_index: 3,
-        explanation: 'Gestalt principles — proximity, similarity, closure, continuity — explain how the eye naturally organises elements into groups. Designers use them to create intuitive, cohesive layouts.' },
-      { id:'d6', term:'Visual Hierarchy', department:'Design',
-        cloze: "By making the headline three times larger than the body copy, she created a clear _____ that guided the reader\'s eye to the key message.",
-        options: ['Visual Hierarchy', 'Gestalt', 'Kerning', 'Wireframe'],
-        correct_index: 0,
-        explanation: 'Visual hierarchy uses size, weight, colour, and position to control where your eye goes first. Good hierarchy means viewers absorb the most important info naturally.' },
-    ]
+  // Deco — width is a CSS string (px or clamp())
+  function Deco({ src, style = {}, opacity = 0.13, rotate = 0, flip = false }) {
+    return (
+      <img src={src} alt="" aria-hidden="true" style={{
+        position:'absolute', pointerEvents:'none', userSelect:'none',
+        opacity, mixBlendMode:'multiply',
+        transform:`rotate(${rotate}deg) scaleX(${flip ? -1 : 1})`,
+        ...style,
+      }} />
+    )
+  }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // HELPERS
-    // ══════════════════════════════════════════════════════════════════════════
-    function shuffle(arr) {
-      const a = [...arr]
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]]
-      }
-      return a
+  function Cloud({ style }) {
+    return <div className="nod-cloud" style={{ pointerEvents:'none', ...style }} />
+  }
+
+  // ══════════════════════════════════════════
+  // FALLBACK TERMS
+  // ══════════════════════════════════════════
+  const FALLBACK_TERMS = [
+    { id:'a1', term:'Sprint', department:'Agile',
+      cloze:"The team committed to shipping the redesigned homepage within the next _____, a two-week cycle starting Monday.",
+      options:['Sprint','Backlog','Standup','Retrospective'], correct_index:0,
+      explanation:'A Sprint is a time-boxed period — typically 1–2 weeks — where the team commits to completing a defined set of tasks.' },
+    { id:'a2', term:'Backlog', department:'Agile',
+      cloze:"Before planning began, the product owner sorted the _____ and moved the checkout bug to the top.",
+      options:['Velocity','Backlog','Story Points','Sprint'], correct_index:1,
+      explanation:'The backlog is the master list of features and tasks ordered by priority.' },
+    { id:'a3', term:'Velocity', department:'Agile',
+      cloze:"After three sprints of data, the team\'s _____ averaged 34 points — enough to forecast the launch date.",
+      options:['Story Points','Sprint','Velocity','Standup'], correct_index:2,
+      explanation:'Velocity is how much work a team finishes in a sprint, measured in story points.' },
+    { id:'a4', term:'Standup', department:'Agile',
+      cloze:"Every morning at 9am the team held a 15-minute _____ to share progress and flag blockers.",
+      options:['Retrospective','Standup','Sprint','Backlog'], correct_index:1,
+      explanation:'The daily standup keeps the team aligned in 15 minutes or less.' },
+    { id:'a5', term:'Retrospective', department:'Agile',
+      cloze:"At the end of the sprint, the whole team gathered for a _____ to reflect on what to improve.",
+      options:['Standup','Story Points','Backlog','Retrospective'], correct_index:3,
+      explanation:'The retro is how Agile teams continuously improve after each sprint.' },
+    { id:'a6', term:'Story Points', department:'Agile',
+      cloze:"The engineer estimated the new search feature at eight _____, accounting for API complexity.",
+      options:['Story Points','Velocity','Sprint','Standup'], correct_index:0,
+      explanation:'Story points estimate relative effort using scales like Fibonacci.' },
+    { id:'p1', term:'Rough Cut', department:'Post-Production',
+      cloze:"The director reviewed the _____ — a first assembly of clips without colour or sound polish.",
+      options:['Colour Grade','Rough Cut','Timecode','B-Roll'], correct_index:1,
+      explanation:'The rough cut is the first full assembly, used to check structure and pacing.' },
+    { id:'p2', term:'Colour Grade', department:'Post-Production',
+      cloze:"Once the edit was locked, the colourist began the _____, giving the film its warm look.",
+      options:['Rough Cut','VFX','Foley','Colour Grade'], correct_index:3,
+      explanation:'Colour grading defines the visual mood — warm tones for drama, cold blues for thrillers.' },
+    { id:'p3', term:'B-Roll', department:'Post-Production',
+      cloze:"The interview felt flat, so the editor cut in _____ of city streets and the product being used.",
+      options:['B-Roll','Foley','Timecode','VFX'], correct_index:0,
+      explanation:'B-roll is supporting footage cut over interviews to keep visuals interesting.' },
+    { id:'p4', term:'Foley', department:'Post-Production',
+      cloze:"The footsteps were too quiet, so a _____ artist re-recorded them on a wooden floor.",
+      options:['VFX','Timecode','Foley','Rough Cut'], correct_index:2,
+      explanation:'Foley artists recreate everyday sounds in a studio, in sync with the picture.' },
+    { id:'p5', term:'Timecode', department:'Post-Production',
+      cloze:"The editor asked the client to reference the _____ when leaving notes to pinpoint the exact frame.",
+      options:['Colour Grade','Timecode','B-Roll','Rough Cut'], correct_index:1,
+      explanation:'Timecode (HH:MM:SS:FF) is stamped on every frame for precise reference.' },
+    { id:'p6', term:'VFX', department:'Post-Production',
+      cloze:"The explosion was too small on set, so the _____ team extended it digitally in post.",
+      options:['Foley','Timecode','Rough Cut','VFX'], correct_index:3,
+      explanation:'VFX are digital elements — CGI, compositing — added in post-production.' },
+    { id:'d1', term:'Kerning', department:'Design',
+      cloze:"The logo looked off until the designer adjusted the _____ between the \'A\' and \'V\'.",
+      options:['Kerning','Bleed','Visual Hierarchy','Wireframe'], correct_index:0,
+      explanation:'Kerning fine-tunes the space between two specific letters for visual balance.' },
+    { id:'d2', term:'Wireframe', department:'Design',
+      cloze:"Before adding colour, the UX team shared a _____ showing where each button would sit.",
+      options:['Pantone','Gestalt','Wireframe','Bleed'], correct_index:2,
+      explanation:'A wireframe is a greyscale layout showing structure before visual design begins.' },
+    { id:'d3', term:'Bleed', department:'Design',
+      cloze:"The printer warned that without a 3mm _____, a white border would appear after trimming.",
+      options:['Kerning','Bleed','Pantone','Visual Hierarchy'], correct_index:1,
+      explanation:'Bleed extends artwork beyond the cut line to avoid white edges on finished prints.' },
+    { id:'d4', term:'Pantone', department:'Design',
+      cloze:"To keep the brand red consistent globally, the spec included a specific _____ colour code.",
+      options:['Gestalt','Wireframe','Pantone','Kerning'], correct_index:2,
+      explanation:'Pantone (PMS) is the global standard for specifying ink colours across printers.' },
+    { id:'d5', term:'Gestalt', department:'Design',
+      cloze:"Using _____ principles, the designer grouped related options so users could scan the form at a glance.",
+      options:['Bleed','Visual Hierarchy','Wireframe','Gestalt'], correct_index:3,
+      explanation:'Gestalt principles — proximity, similarity, closure — explain how the eye organises elements.' },
+    { id:'d6', term:'Visual Hierarchy', department:'Design',
+      cloze:"Making the headline three times larger created a clear _____ that guided the reader\'s eye.",
+      options:['Visual Hierarchy','Gestalt','Kerning','Wireframe'], correct_index:0,
+      explanation:'Visual hierarchy uses size, weight, and colour to control where the eye goes first.' },
+  ]
+
+  // ══════════════════════════════════════════
+  // HELPERS
+  // ══════════════════════════════════════════
+  function shuffle(arr) {
+    const a = [...arr]
+    for (let i = a.length-1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]]
     }
+    return a
+  }
+  const todayStr = () => new Date().toISOString().slice(0,10)
+  function timeToMidnight() {
+    const now = new Date(), mid = new Date(now)
+    mid.setHours(24,0,0,0)
+    const d = mid - now
+    return `${Math.floor(d/3600000)}:${String(Math.floor((d%3600000)/60000)).padStart(2,'0')}:${String(Math.floor((d%60000)/1000)).padStart(2,'0')}`
+  }
 
-    // ── Supabase helpers ──────────────────────────────────────────────────────
-    async function dbFetchTerms() {
-      if (!db) return null
-      const { data, error } = await db.from('terms').select('*')
-      if (error) { console.error('[NOD] fetchTerms:', error); return null }
-      return data
-    }
+  async function dbFetchTerms() {
+    if (!db) return null
+    const { data, error } = await db.from('terms').select('*')
+    if (error) { console.error('[NOD]', error); return null }
+    return data
+  }
+  async function dbUpsertPlayer(name) {
+    if (!db) return null
+    const { data: ex } = await db.from('players').select('*').ilike('name', name).limit(1).single()
+    if (ex) return ex
+    const { data, error } = await db.from('players').insert({ name }).select().single()
+    if (error) { console.error('[NOD]', error); return null }
+    return data
+  }
+  async function dbSaveResult({ playerId, scoreGained, maxStreak }) {
+    if (!db || !playerId) return
+    const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
+    if (!p) return
+    const ng = p.games_played + 1
+    await db.from('players').update({ score: p.score+scoreGained, max_streak: Math.max(p.max_streak, maxStreak), games_played: ng, updated_at: new Date().toISOString() }).eq('id', playerId)
+    await db.from('game_sessions').insert({ player_id: playerId, game_number: ng, score: scoreGained })
+  }
+  async function dbFetchLeaderboard() {
+    if (!db) return null
+    const { data, error } = await db.from('players').select('id,name,score,max_streak,games_played').order('score', { ascending:false }).limit(10)
+    if (error) return null
+    return data
+  }
+  function dbSubscribeLb(cb) {
+    if (!db) return () => {}
+    const ch = db.channel('lb').on('postgres_changes', { event:'*', schema:'public', table:'players' }, async () => { const d = await dbFetchLeaderboard(); if (d) cb(d) }).subscribe()
+    return () => db.removeChannel(ch)
+  }
 
-    async function dbUpsertPlayer(name) {
-      if (!db) return null
-      const { data: existing } = await db.from('players').select('*').ilike('name', name).limit(1).single()
-      if (existing) return existing
-      const { data, error } = await db.from('players').insert({ name }).select().single()
-      if (error) { console.error('[NOD] upsertPlayer:', error); return null }
-      return data
-    }
+  // ══════════════════════════════════════════
+  // SCREEN WRAPPER — full-bleed bg + centered col
+  // ══════════════════════════════════════════
+  function Screen({ children, decos, style = {} }) {
+    return (
+      <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column', ...style }}>
+        {decos}
+        <div className="col" style={{ position:'relative', zIndex:2, flex:1, display:'flex', flexDirection:'column', padding:'52px 20px 36px' }}>
+          {children}
+        </div>
+      </div>
+    )
+  }
 
-    async function dbSaveResult({ playerId, scoreGained, maxStreak }) {
-      if (!db || !playerId) return
-      const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
-      if (!p) return
-      const newGamesPlayed = p.games_played + 1
-      await db.from('players').update({
-        score: p.score + scoreGained,
-        max_streak: Math.max(p.max_streak, maxStreak),
-        games_played: newGamesPlayed,
-        updated_at: new Date().toISOString(),
-      }).eq('id', playerId)
-      await db.from('game_sessions').insert({
-        player_id: playerId,
-        game_number: newGamesPlayed,
-        score: scoreGained,
-      })
-    }
+  // ══════════════════════════════════════════
+  // START SCREEN
+  // ══════════════════════════════════════════
+  function StartScreen({ onStart, loading }) {
+    const [name,      setName]      = useState('')
+    const [savedName, setSavedName] = useState('')
+    const [returning, setReturning] = useState(false)
+    const [countdown, setCountdown] = useState(timeToMidnight())
 
-    async function dbFetchLeaderboard() {
-      if (!db) return null
-      const { data, error } = await db.from('players')
-        .select('id,name,score,max_streak,games_played')
-        .order('score', { ascending: false }).limit(10)
-      if (error) { console.error('[NOD] fetchLeaderboard:', error); return null }
-      return data
-    }
+    useEffect(() => {
+      try {
+        const last = localStorage.getItem('nod_last_name')
+        if (last) { setName(last); setSavedName(last); setReturning(true) }
+      } catch {}
+      const t = setInterval(() => setCountdown(timeToMidnight()), 1000)
+      return () => clearInterval(t)
+    }, [])
 
-    function dbSubscribeLeaderboard(callback) {
-      if (!db) return () => {}
-      const ch = db.channel('lb')
-        .on('postgres_changes', { event:'*', schema:'public', table:'players' }, async () => {
-          const data = await dbFetchLeaderboard()
-          if (data) callback(data)
-        }).subscribe()
-      return () => db.removeChannel(ch)
-    }
+    const canSubmit = name.trim().length >= 2 && !loading
+    const onSubmit = (e) => { e.preventDefault(); if (canSubmit) onStart(name.trim()) }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // SCREEN: START
-    // ══════════════════════════════════════════════════════════════════════════
-    function StartScreen({ onStart, loading }) {
-      const [name, setName] = useState('')
-      const [dept, setDept] = useState(null)
-      const [returning, setReturning] = useState(false)
-      const [savedName, setSavedName] = useState('')
+    return (
+      <Screen decos={<>
+        {/* Clouds */}
+        <Cloud style={{ width:'clamp(120px,18vw,260px)', height:'clamp(40px,6vw,88px)', top:'clamp(80px,12vh,140px)', left:'-3vw', opacity:0.95 }} />
+        <Cloud style={{ width:'clamp(90px,14vw,200px)',  height:'clamp(30px,5vw,68px)', top:'clamp(55px,8vh,100px)',  right:'-2vw', opacity:0.88 }} />
+        <Cloud style={{ width:'clamp(70px,10vw,160px)',  height:'clamp(24px,4vw,54px)', top:'clamp(170px,22vh,250px)',right:'4vw',  opacity:0.72 }} />
+        <Cloud style={{ width:'clamp(55px,8vw,130px)',   height:'clamp(18px,3vw,44px)', top:'clamp(200px,26vh,290px)',left:'5vw',   opacity:0.60 }} />
+        {/* Creatures — full bleed to edges */}
+        <Deco src={E.boat}   style={{ bottom:0,    right:0,   width:'clamp(220px,32vw,560px)' }} opacity={0.14} rotate={-4} />
+        <Deco src={E.cat}    style={{ bottom:'8%', left:0,    width:'clamp(140px,20vw,380px)' }} opacity={0.11} rotate={8} />
+        <Deco src={E.bird}   style={{ top:'28%',   left:0,    width:'clamp(90px,13vw,240px)'  }} opacity={0.09} rotate={-10} flip />
+        <Deco src={E.flower} style={{ top:'35%',   right:0,   width:'clamp(70px,10vw,180px)'  }} opacity={0.08} rotate={12} />
+      </>}>
+        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.22em', textTransform:'uppercase', color:'rgba(26,25,24,0.45)', marginBottom:20, marginTop:0 }}>
+          Navigation of Disciplines
+        </p>
 
-      useEffect(() => {
-        try {
-          const lastName = localStorage.getItem('nod_last_name')
-          if (lastName) {
-            setName(lastName)
-            setSavedName(lastName)
-            setReturning(true)
-          }
-        } catch {}
-      }, [])
+        <h1 style={{
+          fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300,
+          fontSize:'clamp(6rem,14vw,11rem)', lineHeight:0.88, margin:'0 0 16px',
+          background:'linear-gradient(145deg,#C03070 0%,#E888A0 100%)',
+          WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text',
+          letterSpacing:'-0.02em',
+        }}>NOD</h1>
 
-      const canSubmit = name.trim().length >= 2 && !loading
+        <p style={{ fontStyle:'italic', fontWeight:300, fontSize:'clamp(1rem,2.5vw,1.2rem)', color:'#1A1918', lineHeight:1.45, marginBottom:32, maxWidth:280 }}>
+          If everyone's nodding,<br/>someone's probably confused.
+        </p>
 
-      const handleSubmit = (e) => {
-        e.preventDefault()
-        if (!canSubmit) return
-        onStart(name.trim(), null)
-      }
+        {returning && (
+          <div style={{ background:'rgba(255,247,214,0.92)', borderRadius:20, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+            <span style={{ fontWeight:600, color:'#1A1918', fontSize:'0.95rem' }}>Welcome back, {savedName} 👋</span>
+            <button onClick={() => setReturning(false)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'0.72rem', fontWeight:600, color:'#8A8A88', textDecoration:'underline', fontFamily:'inherit' }}>Not you?</button>
+          </div>
+        )}
 
-      return (
-        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-10 pb-8 w-full max-w-[420px]">
+        {!returning && (
+          <div style={{ marginBottom:12 }}>
+            <label style={{ display:'block', fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(26,25,24,0.45)', marginBottom:8 }}>Your username</label>
+            <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex" maxLength={30} autoComplete="off" autoFocus
+              style={{ width:'100%', padding:'14px 16px', background:'rgba(255,255,255,0.78)', borderRadius:16, border:'none', fontSize:'1rem', fontWeight:500, color:'#1A1918', fontFamily:'inherit' }} />
+          </div>
+        )}
 
-          {/* Hero */}
-          <div className="pt-2">
-            <p className="text-[11px] font-semibold tracking-widest uppercase text-ink mb-6">
-              Navigation of Disciplines
-            </p>
-            <h1 className="text-[5rem] font-light leading-[0.9] tracking-tight text-ink mb-5" style={{fontStyle:'italic'}}>
-              The<br/>NOD
-            </h1>
-            <p className="text-base font-light text-ink leading-relaxed max-w-[260px] mt-2">
-              Do you actually understand your colleagues, or are you just nodding?
-            </p>
+        <form onSubmit={onSubmit} style={{ marginBottom:14 }}>
+          <button type="submit" disabled={!canSubmit} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.1rem' }}>
+            {loading ? 'Loading…' : "Let's play today's nod"}
+          </button>
+        </form>
+
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+          {[{ e:'📖', t:'Words collected', s:'your glossary' }, { e:'🏆', t:'Leaderboard', s:'company-wide' }].map(({ e, t, s }) => (
+            <div key={t} style={{ background:'rgba(255,255,255,0.75)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize:'1.2rem', marginBottom:4 }}>{e}</div>
+              <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>{t}</div>
+              <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>{s}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ textAlign:'center', fontSize:'0.78rem', color:'rgba(26,25,24,0.4)' }}>
+          🔥 Next nod resets in {countdown}
+        </div>
+      </Screen>
+    )
+  }
+
+  // ══════════════════════════════════════════
+  // DISCIPLINE SCREEN
+  // ══════════════════════════════════════════
+  function DisciplineScreen({ onSelect }) {
+    const [selected, setSelected] = useState(null)
+    return (
+      <Screen decos={<>
+        <Deco src={E.mantis}    style={{ bottom:0,    right:0,   width:'clamp(200px,30vw,520px)' }} opacity={0.13} rotate={-8} />
+        <Deco src={E.swordfish} style={{ top:'5%',    left:0,    width:'clamp(160px,25vw,440px)' }} opacity={0.10} rotate={12} />
+        <Deco src={E.flower}    style={{ bottom:'30%',left:0,    width:'clamp(70px,10vw,190px)'  }} opacity={0.09} rotate={-5} />
+      </>}>
+        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:10, marginTop:0 }}>Step 2 of 2</p>
+        <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.4rem,6vw,4rem)', lineHeight:1, color:'#1A1918', margin:'0 0 10px' }}>
+          Pick your<br/>home team.
+        </h2>
+        <p style={{ fontSize:'0.9rem', color:'rgba(26,25,24,0.55)', lineHeight:1.5, marginBottom:24, maxWidth:340 }}>
+          You'll still see terms from every discipline — questions from others are worth +5 bonus points.
+        </p>
+
+        <div style={{ flex:1, overflowY:'auto', marginBottom:14 }}>
+          {DISCIPLINES.map(d => {
+            const active = selected === d.name
+            return (
+              <div key={d.name} onClick={() => setSelected(d.name)} style={{
+                display:'flex', alignItems:'center', gap:14, padding:'14px 16px',
+                borderRadius:18, marginBottom:10, cursor:'pointer',
+                background: active ? '#1A1918' : 'rgba(255,255,255,0.82)',
+                boxShadow:'0 2px 12px rgba(0,0,0,0.07)', transition:'all 0.15s',
+              }}>
+                <div style={{ width:14, height:14, borderRadius:'50%', background:d.dot, flexShrink:0 }} />
+                <span style={{ flex:1, fontWeight:600, fontSize:'1.05rem', fontStyle:'italic', color: active ? '#fff' : '#1A1918' }}>{d.name}</span>
+                <div style={{ width:22, height:22, borderRadius:'50%', background: active ? 'white' : 'transparent', border: active ? 'none' : '1.5px solid rgba(26,25,24,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {active && <span style={{ color:'#1A1918', fontSize:'0.72rem', fontWeight:800 }}>✓</span>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        <button className="btn-primary" disabled={!selected} onClick={() => selected && onSelect(selected)} style={{ width:'100%', padding:'16px', fontSize:'1.1rem' }}>
+          Start playing
+        </button>
+      </Screen>
+    )
+  }
+
+  // ══════════════════════════════════════════
+  // CHALLENGE
+  // ══════════════════════════════════════════
+  function ClozeText({ cloze }) {
+    const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
+    return (
+      <p style={{ fontSize:'clamp(1.05rem,2.5vw,1.3rem)', fontWeight:500, color:'#1A1918', lineHeight:1.55, margin:0 }}>
+        {parts[0]}
+        <span style={{ display:'inline-block', width:80, borderBottom:'2px solid #1A1918', margin:'0 4px 3px', verticalAlign:'bottom' }} />
+        {parts[1]}
+      </p>
+    )
+  }
+
+  function ChallengeCard({ question, questionNumber, totalQuestions, streak, score, playerDept, onAnswer }) {
+    const progress = ((questionNumber-1) / totalQuestions) * 100
+    const isCross  = playerDept && question.department !== playerDept
+    const dept     = getDept(question.department)
+    return (
+      <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column' }} className="anim-up">
+        {/* Full-bleed creatures */}
+        <Deco src={E.bird}     style={{ top:0,     right:0,   width:'clamp(130px,20vw,360px)' }} opacity={0.10} rotate={-15} />
+        <Deco src={E.mushroom} style={{ bottom:0,  left:0,    width:'clamp(200px,30vw,520px)' }} opacity={0.11} rotate={8}  />
+        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,width:'clamp(100px,15vw,280px)' }} opacity={0.09} rotate={-8} />
+
+        {isCross && (
+          <div style={{ background:'#F5B800', padding:'8px 20px', display:'flex', justifyContent:'center', position:'relative', zIndex:5 }}>
+            <span style={{ fontWeight:700, fontSize:'0.78rem', letterSpacing:'0.18em', textTransform:'uppercase', color:'#1A1918' }}>+{CROSS_BONUS} · Cross-Discipline</span>
+          </div>
+        )}
+
+        <div className="col" style={{ padding:'48px 20px 10px', display:'flex', alignItems:'center', justifyContent:'space-between', position:'relative', zIndex:2, width:'100%' }}>
+          <span style={{ fontSize:'0.88rem', color:'rgba(26,25,24,0.5)' }}>
+            {questionNumber}<span style={{ opacity:0.4 }}> / {totalQuestions}</span>
+          </span>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            {streak >= 2 && <span style={{ fontWeight:700, fontSize:'0.88rem', color:'#D4A017' }}>🔥 {streak}</span>}
+            <span style={{ fontWeight:700, fontSize:'0.88rem', color:'#1A1918' }}>{score} pts</span>
+          </div>
+        </div>
+
+        <div className="col" style={{ padding:'0 20px 6px', position:'relative', zIndex:2, width:'100%' }}>
+          <div style={{ height:4, background:'rgba(255,255,255,0.5)', borderRadius:4, overflow:'hidden' }}>
+            <div style={{ height:'100%', width:`${progress}%`, background:'#1A1918', borderRadius:4, transition:'width 0.5s' }} />
+          </div>
+        </div>
+
+        <div className="col" style={{ flex:1, display:'flex', flexDirection:'column', padding:'10px 20px 32px', position:'relative', zIndex:2, width:'100%' }}>
+          <div className="card" style={{ padding:'22px', marginBottom:14 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <div style={{ width:10, height:10, borderRadius:'50%', background:dept.dot }} />
+                <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88' }}>{question.department}</span>
+              </div>
+              <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88' }}>Fill the blank</span>
+            </div>
+            <ClozeText cloze={question.cloze} />
           </div>
 
-          {/* Form card */}
-          <div className="mt-8 animate-slide-up">
-            <form onSubmit={handleSubmit}>
-              <div className="bg-surface rounded-card shadow-card p-5 space-y-4 mb-4">
+          <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            {question.options.map((opt, i) => (
+              <button key={i} onClick={() => onAnswer(i)} className="option-btn" style={{ padding:'14px 18px', fontSize:'clamp(0.95rem,2vw,1.1rem)' }}>
+                <span style={{ display:'flex', alignItems:'center', gap:12 }}>
+                  <span style={{ fontWeight:700, fontSize:'0.72rem', color:'rgba(26,25,24,0.35)', width:14, flexShrink:0 }}>{String.fromCharCode(65+i)}</span>
+                  <span style={{ fontStyle:'italic', fontWeight:500 }}>{opt}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-                {/* Welcome back banner */}
-                {returning && (
-                  <div className="bg-amber-light rounded-xl px-4 py-3 flex items-center justify-between">
-                    <p className="text-sm font-medium text-ink">
-                      Welcome back, {savedName} 👋
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setReturning(false)}
-                      className="text-[11px] font-semibold text-ink underline underline-offset-2"
-                    >
-                      Not you?
-                    </button>
+  // ══════════════════════════════════════════
+  // FEEDBACK
+  // ══════════════════════════════════════════
+  function ClozeReveal({ cloze, term, isCorrect }) {
+    const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
+    const c = isCorrect ? '#2A8A52' : '#B03030'
+    return (
+      <p style={{ fontSize:'clamp(1rem,2.2vw,1.15rem)', fontWeight:400, color:'#1A1918', lineHeight:1.55, margin:0 }}>
+        {parts[0]}
+        <span style={{ display:'inline', background: isCorrect ? 'rgba(42,138,82,0.13)' : 'rgba(176,48,48,0.13)', color:c, borderRadius:6, padding:'0 7px', fontWeight:600, fontStyle:'italic' }}>{term}</span>
+        {parts[1]}
+      </p>
+    )
+  }
+
+  function FeedbackScreen({ question, selectedAnswer, isCorrect, streak, onNext, isLast }) {
+    const dept = getDept(question.department)
+    return (
+      <Screen className="anim-up" decos={<>
+        <Deco src={E.star}    style={{ bottom:0,    right:0,   width:'clamp(230px,35vw,600px)' }} opacity={0.12} rotate={20} />
+        <Deco src={E.octopus} style={{ top:'5%',    left:0,    width:'clamp(130px,18vw,340px)' }} opacity={0.10} rotate={-5} />
+        <Deco src={E.plane}   style={{ bottom:'25%',right:0,   width:'clamp(80px,12vw,220px)'  }} opacity={0.09} rotate={30} />
+      </>}>
+        <div style={{ marginBottom:16 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'10px 18px', borderRadius:100, background: isCorrect ? '#2A8A52' : '#B03030', color:'#fff' }}>
+            <span style={{ fontWeight:800, fontSize:'0.95rem' }}>{isCorrect ? '✓' : '✗'}</span>
+            <span style={{ fontWeight:600, fontSize:'0.88rem' }}>{isCorrect ? 'Correct!' : 'Not quite.'}</span>
+            {isCorrect && streak >= 2 && <span style={{ opacity:0.8, fontSize:'0.8rem' }}>🔥 {streak}-streak</span>}
+          </div>
+        </div>
+
+        <div className="card" style={{ padding:'20px 22px', marginBottom:12 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
+            <div style={{ width:9, height:9, borderRadius:'50%', background:dept.dot }} />
+            <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88' }}>{question.department}</span>
+          </div>
+          <ClozeReveal cloze={question.cloze} term={question.term} isCorrect={isCorrect} />
+          {!isCorrect && (
+            <p style={{ marginTop:10, fontSize:'0.85rem', color:'#8A8A88' }}>
+              You chose: <span style={{ color:'#B03030', fontWeight:600, fontStyle:'italic' }}>{question.options[selectedAnswer]}</span>
+            </p>
+          )}
+          <div style={{ marginTop:14, paddingTop:14, borderTop:'1px solid rgba(0,0,0,0.07)', display:'flex', flexDirection:'column', gap:6 }}>
+            {question.options.map((opt, i) => {
+              const isRight    = i === question.correct_index
+              const isSelected = i === selectedAnswer && !isRight
+              if (!isRight && !isSelected) return null
+              return (
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:8, fontSize:'0.9rem', color: isRight ? '#2A8A52' : '#B03030' }}>
+                  <span style={{ fontWeight:800 }}>{isRight ? '✓' : '✗'}</span>
+                  <span style={{ fontStyle:'italic', fontWeight:500 }}>{opt}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div style={{ background:'rgba(255,247,214,0.88)', borderRadius:20, padding:'18px 20px', marginBottom:'auto' }}>
+          <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88', marginBottom:8, marginTop:0 }}>Why?</p>
+          <p style={{ fontSize:'0.9rem', color:'#1A1918', lineHeight:1.55, margin:0 }}>{question.explanation}</p>
+        </div>
+
+        <button onClick={onNext} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.05rem', marginTop:20 }}>
+          {isLast ? 'See my score' : 'Next question'}
+        </button>
+      </Screen>
+    )
+  }
+
+  // ══════════════════════════════════════════
+  // SUMMARY
+  // ══════════════════════════════════════════
+  function SummaryScreen({ playerName, score, totalQuestions, maxStreak, onLeaderboard, onPlayAgain, onLibrary }) {
+    const correct  = Math.round(score / PTS_CORRECT)
+    const accuracy = Math.round((correct / totalQuestions) * 100)
+    const { emoji, msg } =
+      accuracy >= 90 ? { emoji:'🏆', msg:"You're genuinely cross-functional." } :
+      accuracy >= 70 ? { emoji:'💪', msg:"Solid. A few gaps, but you're getting there." } :
+      accuracy >= 50 ? { emoji:'🤔', msg:'Some nodding happening. Keep playing.' } :
+                       { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
+    return (
+      <Screen decos={<>
+        <Deco src={E.mammoth} style={{ bottom:0,    right:0,   width:'clamp(240px,35vw,580px)' }} opacity={0.12} rotate={-5} />
+        <Deco src={E.flower}  style={{ top:'8%',    left:0,    width:'clamp(150px,22vw,420px)' }} opacity={0.10} rotate={15} />
+        <Deco src={E.boat}    style={{ top:'3%',    right:0,   width:'clamp(80px,11vw,220px)'  }} opacity={0.08} rotate={10} />
+      </>}>
+        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Results for</p>
+        <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.4rem,6vw,3.6rem)', color:'#1A1918', margin:'0 0 24px', lineHeight:1 }}>{playerName}</h2>
+
+        <div className="card" style={{ padding:'22px', marginBottom:12 }}>
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:20 }}>
+            <div>
+              <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88', marginBottom:8, marginTop:0 }}>Total score</p>
+              <p style={{ fontSize:'clamp(3.5rem,9vw,5rem)', fontWeight:300, color:'#1A1918', lineHeight:1, margin:0 }}>{score}</p>
+              <p style={{ fontSize:'0.8rem', color:'#8A8A88', marginTop:4, marginBottom:0 }}>points</p>
+            </div>
+            <span style={{ fontSize:'2.5rem' }}>{emoji}</span>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', paddingTop:16, borderTop:'1px solid rgba(0,0,0,0.07)', textAlign:'center' }}>
+            {[{ val:`${correct}/${totalQuestions}`, label:'Correct' }, { val:maxStreak, label:'Best streak' }, { val:`${accuracy}%`, label:'Accuracy' }].map(({ val, label }, i) => (
+              <div key={label} style={{ borderLeft: i>0 ? '1px solid rgba(0,0,0,0.07)' : 'none' }}>
+                <p style={{ fontSize:'clamp(1.3rem,3.5vw,1.8rem)', fontWeight:600, color:'#1A1918', margin:'0 0 2px' }}>{val}</p>
+                <p style={{ fontSize:'0.62rem', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A8A88', margin:0 }}>{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p style={{ fontSize:'0.88rem', color:'rgba(26,25,24,0.55)', lineHeight:1.6, marginBottom:'auto', paddingLeft:2 }}>{msg}</p>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:10, marginTop:24 }}>
+          <button onClick={onLeaderboard} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.05rem' }}>See the leaderboard</button>
+          <button onClick={onLibrary}     className="btn-ghost"   style={{ width:'100%', padding:'12px', fontSize:'1rem'   }}>Browse the glossary</button>
+          <button onClick={onPlayAgain}   className="btn-ghost"   style={{ width:'100%', padding:'8px',  fontSize:'0.88rem', color:'rgba(26,25,24,0.45)' }}>Play again</button>
+        </div>
+      </Screen>
+    )
+  }
+
+  // ══════════════════════════════════════════
+  // LEADERBOARD
+  // ══════════════════════════════════════════
+  const BALL = [
+    { bg:'radial-gradient(circle at 35% 32%,#FFE880,#F5B800 58%,#C88000 100%)', sh:'rgba(245,184,0,0.4)' },
+    { bg:'radial-gradient(circle at 35% 32%,#A0E0B0,#3DB870 58%,#208050 100%)', sh:'rgba(61,184,112,0.4)' },
+    { bg:'radial-gradient(circle at 35% 32%,#FFCCAA,#C87848 58%,#904828 100%)', sh:'rgba(200,120,72,0.4)' },
+  ]
+
+  function LeaderboardScreen({ playerId, playerName, onPlayAgain }) {
+    const [leaders, setLeaders] = useState([])
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+      let u = () => {}
+      dbFetchLeaderboard().then(d => { setLeaders(d ?? []); setLoading(false); u = dbSubscribeLb(setLeaders) })
+      return () => u()
+    }, [])
+
+    const top3 = leaders.slice(0,3), rest = leaders.slice(3)
+    const now = new Date()
+    const daysLeft = Math.ceil((new Date(now.getFullYear(), now.getMonth()+1, 0) - now) / 86400000)
+    const month    = now.toLocaleString('default', { month:'long', year:'numeric' })
+
+    // Podium order: 2nd | 1st | 3rd
+    const podium = [1, 0, 2]
+    const bSize  = ['clamp(55px,8vw,90px)', 'clamp(70px,10vw,110px)', 'clamp(50px,7vw,80px)']
+    const pH     = ['clamp(70px,10vw,110px)', 'clamp(100px,14vw,150px)', 'clamp(55px,8vw,90px)']
+
+    return (
+      <Screen decos={<>
+        <Deco src={E.thunder}   style={{ top:0,     right:0,   width:'clamp(190px,28vw,500px)' }} opacity={0.11} rotate={10} />
+        <Deco src={E.swordfish} style={{ bottom:0,  left:0,    width:'clamp(240px,36vw,620px)' }} opacity={0.12} rotate={-5} />
+        <Deco src={E.cat}       style={{ bottom:'22%',right:0, width:'clamp(80px,11vw,220px)'  }} opacity={0.09} rotate={15} />
+      </>}>
+        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>
+          {month.toUpperCase()} · TOP {Math.min(leaders.length,3)}
+        </p>
+        <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2rem,5vw,3rem)', color:'#1A1918', margin:'0 0 24px', lineHeight:1.1 }}>
+          This month's<br/>sharpest nods.
+        </h2>
+
+        {!loading && top3.length >= 1 && (
+          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center', gap:'clamp(8px,2vw,20px)', marginBottom:20 }}>
+            {podium.map(rank => {
+              const p = top3[rank]
+              if (!p) return <div key={rank} style={{ width:bSize[rank] }} />
+              const isMe = p.id === playerId || p.name?.toLowerCase() === playerName?.toLowerCase()
+              return (
+                <div key={rank} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:5 }}>
+                  <span style={{ fontSize:'0.78rem', fontWeight:600, fontStyle:'italic', color:'#1A1918' }}>{p.name}{isMe?' you':''}</span>
+                  <div style={{ width:bSize[rank], height:bSize[rank], borderRadius:'50%', background:BALL[rank].bg, boxShadow:`0 8px 24px ${BALL[rank].sh}` }} />
+                  <span style={{ fontWeight:700, fontSize:'clamp(0.9rem,2vw,1.1rem)', color:'#1A1918' }}>{p.score}</span>
+                  <div style={{ width:'100%', height:pH[rank], background:'rgba(255,255,255,0.75)', borderRadius:'10px 10px 0 0', display:'flex', alignItems:'flex-start', justifyContent:'center', paddingTop:8 }}>
+                    <span style={{ fontSize:'1.1rem' }}>{rank===0?'🥇':rank===1?'🥈':'🥉'}</span>
                   </div>
-                )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+        {loading && <p style={{ textAlign:'center', color:'rgba(26,25,24,0.4)', fontSize:'0.9rem', marginBottom:20 }}>Loading…</p>}
 
-                {/* Username */}
+        {rest.length > 0 && (
+          <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:14 }}>
+            {rest.map((p, i) => {
+              const isMe = p.id === playerId || p.name?.toLowerCase() === playerName?.toLowerCase()
+              return (
+                <div key={p.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px', borderRadius:16, background: isMe ? 'rgba(255,247,214,0.88)' : 'rgba(255,255,255,0.75)', boxShadow:'0 1px 8px rgba(0,0,0,0.05)' }}>
+                  <span style={{ fontWeight:700, fontSize:'0.82rem', color:'#8A8A88', width:20 }}>{i+4}</span>
+                  <span style={{ flex:1, fontWeight:600, fontSize:'0.95rem', fontStyle:'italic', color:'#1A1918' }}>{p.name}{isMe?' (you)':''}</span>
+                  <span style={{ fontWeight:700, fontSize:'1rem', color:'#1A1918' }}>{p.score}<span style={{ fontWeight:300, fontSize:'0.72rem', color:'#8A8A88' }}> pts</span></span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+          {[{ label:'Resets in', val:`${daysLeft} days` }, { label:'Playing', val:`${leaders.length} teammates` }].map(({ label, val }) => (
+            <div key={label} style={{ background:'rgba(255,255,255,0.7)', borderRadius:16, padding:'12px 14px' }}>
+              <p style={{ fontSize:'0.7rem', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A8A88', margin:'0 0 2px' }}>{label}</p>
+              <p style={{ fontWeight:600, fontSize:'clamp(0.95rem,2.2vw,1.1rem)', color:'#1A1918', margin:0 }}>{val}</p>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={onPlayAgain} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.05rem' }}>
+          Play today's nod
+        </button>
+      </Screen>
+    )
+  }
+
+  // ══════════════════════════════════════════
+  // LIBRARY
+  // ══════════════════════════════════════════
+  function LibraryScreen({ onBack }) {
+    const [terms,   setTerms]   = useState([])
+    const [filter,  setFilter]  = useState('All')
+    const [loading, setLoading] = useState(true)
+    useEffect(() => { dbFetchTerms().then(d => { setTerms(d ?? FALLBACK_TERMS); setLoading(false) }) }, [])
+
+    const depts   = ['All', ...Array.from(new Set(terms.map(t => t.department))).sort()]
+    const visible = filter === 'All' ? terms : terms.filter(t => t.department === filter)
+
+    return (
+      <Screen style={{ overflow:'hidden' }} decos={<>
+        <Deco src={E.octopus} style={{ bottom:0,    right:0,   width:'clamp(220px,32vw,560px)' }} opacity={0.12} rotate={-10} />
+        <Deco src={E.mantis}  style={{ top:'8%',    left:0,    width:'clamp(160px,24vw,440px)' }} opacity={0.10} rotate={20}  />
+        <Deco src={E.flower}  style={{ bottom:'30%',right:0,   width:'clamp(65px,9vw,180px)'   }} opacity={0.08} rotate={-8}  />
+      </>}>
+        <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', fontSize:'0.85rem', color:'rgba(26,25,24,0.45)', textAlign:'left', marginBottom:12, padding:0 }}>← Back</button>
+        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Your Glossary · {terms.length} terms</p>
+        <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.2rem,5vw,3rem)', color:'#1A1918', margin:'0 0 16px', lineHeight:1 }}>Words,<br/>collected.</h2>
+
+        <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:12, flexShrink:0 }}>
+          {depts.map(d => {
+            const dept = getDept(d), active = filter === d
+            return (
+              <button key={d} onClick={() => setFilter(d)} style={{ flexShrink:0, padding:'6px 14px', borderRadius:100, background: active ? '#1A1918' : 'rgba(255,255,255,0.8)', color: active ? '#fff' : '#1A1918', border:'none', cursor:'pointer', fontFamily:'inherit', fontWeight:600, fontSize:'0.8rem', display:'flex', alignItems:'center', gap:6 }}>
+                {d !== 'All' && <span style={{ width:8, height:8, borderRadius:'50%', background:dept.dot, display:'inline-block' }} />}
+                {d === 'All' ? `All ${terms.length}` : `${d.split(/[\s-]/)[0]} ${terms.filter(t=>t.department===d).length}`}
+              </button>
+            )
+          })}
+        </div>
+
+        <div style={{ flex:1, overflowY:'auto', paddingBottom:20 }}>
+          {loading ? <p style={{ textAlign:'center', color:'rgba(26,25,24,0.4)', fontSize:'0.9rem', marginTop:40 }}>Loading…</p> : visible.map(t => {
+            const dept = getDept(t.department)
+            return (
+              <div key={t.id || t.term} style={{ display:'flex', alignItems:'flex-start', gap:12, padding:'14px 4px', borderBottom:'1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ width:12, height:12, borderRadius:'50%', background:dept.dot, flexShrink:0, marginTop:5 }} />
                 <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-widest text-ink mb-2">
-                    Your username
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Alex"
-                    maxLength={30}
-                    autoComplete="off"
-                    autoFocus
-                    className="w-full px-4 py-3.5 bg-field rounded-xl text-base font-medium text-ink"
-                    style={{border:'none'}}
-                  />
+                  <p style={{ fontWeight:600, fontStyle:'italic', fontSize:'1rem', color:'#1A1918', margin:'0 0 3px' }}>{t.term}</p>
+                  <p style={{ fontSize:'0.82rem', color:'rgba(26,25,24,0.55)', margin:0, lineHeight:1.45 }}>{t.definition || t.explanation}</p>
                 </div>
-
               </div>
+            )
+          })}
+        </div>
+      </Screen>
+    )
+  }
 
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="btn-primary w-full py-4"
-              >
-                {loading ? 'Loading…' : "Let's play"}
-              </button>
-            </form>
+  // ══════════════════════════════════════════
+  // PROFILE
+  // ══════════════════════════════════════════
+  function ProfileScreen({ playerId, playerName, playerDept, onBack }) {
+    const [stats, setStats] = useState(null)
+    useEffect(() => {
+      if (!db || !playerId) return
+      db.from('players').select('*').eq('id', playerId).single().then(({ data }) => setStats(data))
+    }, [playerId])
+    const dept     = getDept(playerDept)
+    const accuracy = stats ? Math.round(((stats.score / PTS_CORRECT) / Math.max(stats.games_played * QUESTIONS_PER_GAME, 1)) * 100) : 0
+    const since    = new Date().toLocaleString('default', { month:'long', year:'numeric' })
+    return (
+      <Screen decos={<>
+        <Deco src={E.mammoth} style={{ bottom:0,   right:0,   width:'clamp(260px,38vw,640px)' }} opacity={0.12} rotate={-8}  />
+        <Deco src={E.lizard}  style={{ top:'5%',   right:0,   width:'clamp(120px,18vw,340px)' }} opacity={0.10} rotate={20}  />
+        <Deco src={E.boat}    style={{ bottom:'28%',left:0,   width:'clamp(110px,16vw,300px)' }} opacity={0.09} rotate={10}  />
+      </>}>
+        <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:'inherit', fontSize:'0.85rem', color:'rgba(26,25,24,0.45)', textAlign:'left', marginBottom:20, padding:0 }}>← Back</button>
+
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:20 }}>
+          <div style={{ width:'clamp(60px,10vw,90px)', height:'clamp(60px,10vw,90px)', borderRadius:'50%', background:`radial-gradient(circle at 35% 32%,${dept.dot}CC,${dept.color} 70%)`, boxShadow:`0 8px 28px ${dept.dot}66`, marginBottom:12 }} />
+          <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:400, fontSize:'clamp(1.8rem,4vw,2.4rem)', color:'#1A1918', margin:'0 0 4px' }}>{playerName}</h2>
+          <p style={{ fontSize:'0.82rem', color:'rgba(26,25,24,0.5)', margin:0 }}>{playerDept || 'No discipline'} · since {since}</p>
+        </div>
+
+        {stats ? (
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+            {[{ val:stats.score, label:'Total Points' }, { val:stats.games_played, label:'Days Played' }, { val:stats.max_streak, label:'Best Streak' }, { val:`${accuracy}%`, label:'Accuracy' }].map(({ val, label }) => (
+              <div key={label} style={{ background:'rgba(255,255,255,0.78)', borderRadius:18, padding:'16px 18px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)' }}>
+                <p style={{ fontWeight:600, fontSize:'clamp(1.4rem,3.5vw,2rem)', color:'#1A1918', margin:'0 0 2px' }}>{val}</p>
+                <p style={{ fontSize:'0.68rem', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A8A88', margin:0 }}>{label}</p>
+              </div>
+            ))}
           </div>
+        ) : <p style={{ textAlign:'center', color:'rgba(26,25,24,0.4)', fontSize:'0.9rem' }}>Loading…</p>}
 
-          {/* Features */}
-          <div className="mt-6 space-y-3 text-sm text-ink font-light">
-            <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🔥</span>
-              <span>Streak bonuses for consecutive answers</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-full bg-surface shadow-card flex items-center justify-center text-xs">🏆</span>
-              <span>Live company-wide leaderboard</span>
-            </div>
+        <div style={{ background:'rgba(255,255,255,0.75)', borderRadius:20, padding:'18px 20px', marginBottom:16 }}>
+          <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88', margin:'0 0 12px' }}>Achievements</p>
+          <div style={{ display:'flex', gap:18 }}>
+            {[{ e:'🔥', l:'Streak', ok: stats && stats.max_streak >= 3 }, { e:'🏆', l:'Top scorer', ok: false }, { e:'📚', l:'10 games', ok: stats && stats.games_played >= 10 }, { e:'🎯', l:'Sharp', ok: stats && accuracy >= 90 }].map(({ e, l, ok }) => (
+              <div key={l} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, opacity: ok ? 1 : 0.3 }}>
+                <span style={{ fontSize:'1.5rem' }}>{e}</span>
+                <span style={{ fontSize:'0.58rem', fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'#8A8A88' }}>{l}</span>
+              </div>
+            ))}
           </div>
         </div>
-      )
-    }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // SCREEN: CHALLENGE CARD
-    // ══════════════════════════════════════════════════════════════════════════
-    function ClozeText({ cloze }) {
-      const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
-      return (
-        <p className="text-[1.25rem] font-medium text-ink leading-relaxed" style={{color:'#0D0C0B'}}>
-          {parts[0]}
-          <span
-            style={{
-              display: 'inline-block',
-              width: '90px',
-              borderBottom: '2px solid #1A1918',
-              margin: '0 4px 2px',
-              verticalAlign: 'bottom',
-            }}
-          />
-          {parts[1]}
-        </p>
-      )
-    }
+        <button onClick={onBack} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.05rem', marginTop:'auto' }}>Play today's nod</button>
+      </Screen>
+    )
+  }
 
-    function ChallengeCard({ question, questionNumber, totalQuestions, streak, score, onAnswer }) {
-      const progress = ((questionNumber - 1) / totalQuestions) * 100
+  // ══════════════════════════════════════════
+  // DAILY DONE
+  // ══════════════════════════════════════════
+  function DailyDoneScreen({ streak, onLeaderboard, onLibrary }) {
+    const [countdown, setCountdown] = useState(timeToMidnight())
+    useEffect(() => { const t = setInterval(() => setCountdown(timeToMidnight()), 1000); return () => clearInterval(t) }, [])
+    return (
+      <Screen decos={<>
+        <Deco src={E.thunder}  style={{ top:0,     right:0,   width:'clamp(200px,30vw,520px)' }} opacity={0.13} rotate={15}  />
+        <Deco src={E.mountain} style={{ bottom:0,  left:0,    width:'clamp(280px,40vw,680px)' }} opacity={0.12} rotate={-5}  />
+        <Deco src={E.star}     style={{ bottom:'28%',right:0, width:'clamp(110px,17vw,320px)' }} opacity={0.10} rotate={30}  />
+        <Deco src={E.lizard}   style={{ top:'14%', left:0,    width:'clamp(70px,10vw,200px)'  }} opacity={0.08} rotate={10}  />
+      </>}>
+        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:12, marginTop:0 }}>Complete · Well done!</p>
+        <h2 style={{ fontFamily:'"Cormorant Garamond",serif', fontStyle:'italic', fontWeight:300, fontSize:'clamp(2.8rem,7vw,4.5rem)', color:'#1A1918', margin:'0 0 28px', lineHeight:1.05 }}>
+          See you<br/>tomorrow.
+        </h2>
 
-      return (
-        <div className="flex flex-col min-h-dvh bg-bg w-full max-w-[420px]">
-
-          {/* Top bar */}
-          <div className="px-5 pt-12 pb-4 flex items-center justify-between">
-            <span className="text-sm font-light text-muted tabular-nums">
-              {questionNumber} <span className="text-muted/50">/ {totalQuestions}</span>
-            </span>
-            <div className="flex items-center gap-3">
-              {streak >= 2 && (
-                <span className="text-sm font-semibold" style={{color:'#F5B800'}}>🔥 {streak}</span>
-              )}
-              <span className="text-sm font-semibold text-ink tabular-nums">{score} pts</span>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div className="mx-5 h-1 bg-surface rounded-full overflow-hidden mb-5">
-            <div
-              className="h-full bg-ink rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          {/* Question card */}
-          <div className="flex-1 flex flex-col px-5 animate-slide-up">
-            <div className="bg-surface rounded-card shadow-card p-6 mb-4">
-              <div className="flex items-center justify-between mb-8">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-muted bg-field px-2.5 py-1 rounded-full">
-                  {question.department}
-                </span>
-                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{color:'#888', letterSpacing:'0.12em'}}>
-                  Fill the blank
-                </span>
-              </div>
-
-              <ClozeText cloze={question.cloze} />
-            </div>
-
-            {/* Options — term names */}
-            <div className="space-y-2.5 pb-8">
-              {question.options.map((opt, i) => (
-                <button
-                  key={i}
-                  onClick={() => onAnswer(i)}
-                  className="option-btn px-5 py-4 text-base"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="font-semibold text-muted shrink-0 text-[11px] w-4">
-                      {String.fromCharCode(65 + i)}
-                    </span>
-                    <span className="font-medium" style={{fontStyle:'italic'}}>{opt}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="card" style={{ padding:'20px 22px', marginBottom:12, textAlign:'center' }}>
+          <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'#8A8A88', margin:'0 0 8px' }}>Next nod in</p>
+          <p style={{ fontFamily:'monospace', fontWeight:700, fontSize:'clamp(1.8rem,5vw,2.6rem)', color:'#1A1918', margin:'0 0 4px', letterSpacing:'0.05em' }}>{countdown}</p>
+          <p style={{ fontSize:'0.78rem', color:'rgba(26,25,24,0.4)', margin:0 }}>Midnight, your time.</p>
         </div>
-      )
-    }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // SCREEN: FEEDBACK
-    // ══════════════════════════════════════════════════════════════════════════
-    function ClozeReveal({ cloze, term, isCorrect }) {
-      const parts = cloze.includes('. . . . . . .') ? cloze.split('. . . . . . .') : cloze.split('_____')
-      const color = isCorrect ? '#2D9E5F' : '#D94F4F'
-      return (
-        <p className="text-[1.15rem] font-light text-ink leading-relaxed">
-          {parts[0]}
-          <span
-            style={{
-              display: 'inline-block',
-              background: isCorrect ? 'rgba(45,158,95,0.12)' : 'rgba(217,79,79,0.12)',
-              color: color,
-              borderRadius: '6px',
-              padding: '0 8px',
-              margin: '0 2px',
-              fontWeight: 600,
-              fontStyle: 'italic',
-            }}
-          >{term}</span>
-          {parts[1]}
-        </p>
-      )
-    }
-
-    function FeedbackScreen({ question, selectedAnswer, isCorrect, streak, onNext, isLast }) {
-      const selectedTerm = question.options[selectedAnswer]
-
-      return (
-        <div className="flex flex-col min-h-dvh bg-bg w-full max-w-[420px] animate-slide-up">
-
-          {/* Result indicator */}
-          <div className="px-5 pt-12 pb-4">
-            <div className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-pill
-              ${isCorrect ? 'bg-correct text-white' : 'bg-wrong text-white'}`}>
-              <span className="font-bold text-base">{isCorrect ? '✓' : '✗'}</span>
-              <span className="font-semibold text-sm">
-                {isCorrect ? 'Correct!' : 'Not quite.'}
-              </span>
-              {isCorrect && streak >= 2 && (
-                <span className="text-white/80 text-xs ml-1">🔥 {streak}-streak</span>
-              )}
-            </div>
+        {streak > 0 && (
+          <div style={{ background:'rgba(255,247,214,0.88)', borderRadius:20, padding:'18px 20px', marginBottom:'auto', textAlign:'center' }}>
+            <span style={{ fontSize:'2rem', display:'block', marginBottom:6 }}>🔥</span>
+            <p style={{ fontWeight:700, fontSize:'clamp(1rem,2.5vw,1.2rem)', color:'#1A1918', margin:'0 0 4px' }}>{streak}-day streak</p>
+            <p style={{ fontSize:'0.82rem', color:'rgba(26,25,24,0.5)', margin:0 }}>Don't break it.</p>
           </div>
+        )}
 
-          <div className="flex-1 flex flex-col px-5 pb-8">
-
-            {/* Sentence reveal card */}
-            <div className="bg-surface rounded-card shadow-card p-6 mb-4">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-4">
-                {question.department}
-              </p>
-
-              <ClozeReveal cloze={question.cloze} term={question.term} isCorrect={isCorrect} />
-
-              {/* If wrong, show what they picked */}
-              {!isCorrect && (
-                <p className="mt-3 text-sm font-light text-muted">
-                  You chose: <span className="font-semibold" style={{color:'#D94F4F',fontStyle:'italic'}}>{selectedTerm}</span>
-                </p>
-              )}
-
-              {/* Options recap — subtle */}
-              <div className="mt-5 pt-4 border-t border-field space-y-1.5">
-                {question.options.map((opt, i) => {
-                  const isRight    = i === question.correct_index
-                  const isSelected = i === selectedAnswer && !isRight
-                  if (!isRight && !isSelected) return null
-                  return (
-                    <div key={i} className={`flex items-center gap-2 text-sm
-                      ${isRight ? 'text-correct' : 'text-wrong'}`}>
-                      <span className="font-bold">{isRight ? '✓' : '✗'}</span>
-                      <span className="font-medium" style={{fontStyle:'italic'}}>{opt}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Explanation card */}
-            <div className="bg-amber-light rounded-card p-5 mb-6">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-2">Why?</p>
-              <p className="text-sm font-light text-ink leading-relaxed">{question.explanation}</p>
-            </div>
-
-            <div className="mt-auto">
-              <button onClick={onNext} className="btn-primary w-full py-4">
-                {isLast ? 'See my score' : 'Next question'}
-              </button>
-            </div>
-          </div>
+        <div style={{ display:'flex', flexDirection:'column', gap:10, marginTop:24 }}>
+          <button onClick={onLeaderboard} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.05rem' }}>See the leaderboard</button>
+          <button onClick={onLibrary}     className="btn-ghost"   style={{ width:'100%', padding:'12px', fontSize:'1rem'   }}>Browse the glossary</button>
         </div>
-      )
-    }
+      </Screen>
+    )
+  }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // SCREEN: SUMMARY
-    // ══════════════════════════════════════════════════════════════════════════
-    function SummaryScreen({ playerName, playerDept, score, totalQuestions, maxStreak, onLeaderboard, onPlayAgain }) {
-      const correct  = Math.round(score / PTS_CORRECT)
-      const accuracy = Math.round((correct / totalQuestions) * 100)
+  // ══════════════════════════════════════════
+  // APP
+  // ══════════════════════════════════════════
+  function App() {
+    const [screen,         setScreen]         = useState('start')
+    const [playerName,     setPlayerName]     = useState('')
+    const [playerDept,     setPlayerDept]     = useState(null)
+    const [playerId,       setPlayerId]       = useState(null)
+    const [questions,      setQuestions]      = useState([])
+    const [currentIndex,   setCurrentIndex]   = useState(0)
+    const [selectedAnswer, setSelectedAnswer] = useState(null)
+    const [isCorrect,      setIsCorrect]      = useState(null)
+    const [score,          setScore]          = useState(0)
+    const [streak,         setStreak]         = useState(0)
+    const [maxStreak,      setMaxStreak]      = useState(0)
+    const [loading,        setLoading]        = useState(false)
+    const [gamesPlayed,    setGamesPlayed]    = useState(0)
 
-      const { emoji, msg } = accuracy >= 90 ? { emoji:'🏆', msg:"You're genuinely cross-functional." }
-                           : accuracy >= 70 ? { emoji:'💪', msg:"Solid. A few gaps, but you're getting there." }
-                           : accuracy >= 50 ? { emoji:'🤔', msg:'Some nodding happening. Keep playing.' }
-                           :                  { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
+    const handleNameSubmit = useCallback(async (name) => {
+      setLoading(true)
+      setPlayerName(name)
+      const key = name.toLowerCase()
 
-      return (
-        <div className="flex flex-col min-h-dvh bg-bg px-5 pt-14 pb-8 w-full max-w-[420px] animate-slide-up">
-
-          <div className="mb-8">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-1">Results for</p>
-            <h2 className="text-4xl font-light text-ink" style={{fontStyle:'italic'}}>{playerName}</h2>
-          </div>
-
-          {/* Score card */}
-          <div className="bg-surface rounded-card shadow-card p-6 mb-4">
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-2">Total score</p>
-                <p className="text-7xl font-light text-ink tabular-nums leading-none">{score}</p>
-                <p className="text-sm font-light text-muted mt-1.5">points</p>
-              </div>
-              <span className="text-4xl mt-1">{emoji}</span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-0 pt-5 border-t border-field text-center">
-              {[
-                { val: `${correct}/${totalQuestions}`, label: 'Correct' },
-                { val: maxStreak,                       label: 'Best streak' },
-                { val: `${accuracy}%`,                  label: 'Accuracy' },
-              ].map(({ val, label }, i) => (
-                <div key={label} className={i > 0 ? 'border-l border-field' : ''}>
-                  <p className="text-2xl font-semibold text-ink tabular-nums">{val}</p>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted mt-0.5">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <p className="text-sm font-light text-muted leading-relaxed px-1 mb-8">{msg}</p>
-
-          <div className="mt-auto space-y-3">
-            <button onClick={onLeaderboard} className="btn-primary w-full py-4">
-              See the leaderboard
-            </button>
-            <button onClick={onPlayAgain} className="btn-secondary w-full py-3.5 text-sm font-semibold">
-              Play again
-            </button>
-          </div>
-        </div>
-      )
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // SCREEN: LEADERBOARD
-    // ══════════════════════════════════════════════════════════════════════════
-    const MEDALS = ['🥇','🥈','🥉']
-
-    function Leaderboard({ playerId, playerName, onPlayAgain }) {
-      const [leaders, setLeaders] = useState([])
-      const [loading, setLoading] = useState(true)
-
-      useEffect(() => {
-        let unsub = () => {}
-        async function init() {
-          if (getPreviewHash() === 'leaderboard') {
-            setLeaders(PREVIEW_LEADERS)
-            setLoading(false)
-            return
-          }
-          const data = await dbFetchLeaderboard()
-          setLeaders(data ?? [{ id: playerId || 'demo', name: playerName, score: 0, max_streak: 0, games_played: 1 }])
-          setLoading(false)
-          unsub = dbSubscribeLeaderboard(setLeaders)
-        }
-        init()
-        return () => unsub()
-      }, [])
-
-      return (
-        <div className="flex flex-col min-h-dvh bg-bg w-full max-w-[420px]">
-
-          {/* Header card */}
-          <div className="mx-5 mt-12 mb-5 bg-ink rounded-card p-6">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1">Company-wide</p>
-            <h2 className="text-3xl font-light text-white" style={{fontStyle:'italic'}}>Leaderboard</h2>
-          </div>
-
-          {/* List */}
-          <div className="flex-1 px-5 overflow-y-auto">
-            {loading ? (
-              <p className="text-center py-16 text-sm font-light text-muted">Loading…</p>
-            ) : leaders.length === 0 ? (
-              <p className="text-center py-16 text-sm font-light text-muted">No scores yet — be the first!</p>
-            ) : (
-              <div className="space-y-2 pb-4">
-                {leaders.map((p, i) => {
-                  const isMe = p.id === playerId || p.name.toLowerCase() === playerName.toLowerCase()
-                  return (
-                    <div
-                      key={p.id}
-                      className={`flex items-center gap-4 px-4 py-4 rounded-card transition-all
-                        ${isMe ? 'bg-amber-light shadow-card' : 'bg-surface shadow-card'}`}
-                    >
-                      <span className="text-lg w-7 text-center shrink-0">
-                        {i < 3 ? MEDALS[i] : (
-                          <span className="text-sm font-semibold text-muted tabular-nums">{i+1}</span>
-                        )}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm text-ink truncate">
-                          {p.name}
-                          {isMe && <span className="ml-1.5 text-xs font-light text-muted">(you)</span>}
-                        </p>
-                        <p className="text-[10px] font-light text-muted mt-0.5">
-                          {p.games_played} game{p.games_played !== 1 ? 's' : ''} · best streak {p.max_streak}
-                        </p>
-                      </div>
-                      <p className="text-xl font-semibold text-ink tabular-nums shrink-0">
-                        {p.score}
-                        <span className="text-xs font-light text-muted ml-0.5">pts</span>
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="px-5 py-6 space-y-3">
-            <button onClick={onPlayAgain} className="btn-primary w-full py-4">
-              Play again
-            </button>
-            <p className="text-center text-[10px] font-light text-muted">Updates in real-time</p>
-          </div>
-        </div>
-      )
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // APP — state machine
-    // ══════════════════════════════════════════════════════════════════════════
-    // ── Preview mock data (for Figma import via URL hash) ──────────────────────
-    const PREVIEW_QUESTION = {
-      term: 'Bleed', department: 'Design',
-      sentence: 'The printer warned that without a 3mm . . . . . . . , a white border would appear along the edge once the pages were trimmed.',
-      options: ['Kerning', 'Bleed', 'Pantone', 'Visual Hierarchy'],
-      correct_index: 1,
-      explanation: 'Bleed is the extra 3mm that extends artwork beyond the cut line. Since cutting isn\'t perfectly precise, bleed ensures colours reach the very edge of the finished piece.'
-    }
-    const PREVIEW_LEADERS = [
-      { id:'1', name:'Sofia', score:320, max_streak:5, games_played:4 },
-      { id:'2', name:'Marcus', score:280, max_streak:4, games_played:3 },
-      { id:'3', name:'Platon', score:240, max_streak:3, games_played:2 },
-      { id:'4', name:'Isla', score:180, max_streak:2, games_played:2 },
-      { id:'5', name:'Theo', score:120, max_streak:1, games_played:1 },
-    ]
-    function getPreviewHash() {
-      const hash = window.location.hash.replace('#','')
-      return ['playing','feedback','feedback-wrong','summary','leaderboard'].includes(hash) ? hash : null
-    }
-
-    function App() {
-      const preview = getPreviewHash()
-      const [screen,         setScreen]         = useState(preview ? (preview === 'leaderboard' ? 'leaderboard' : preview === 'summary' ? 'summary' : preview.startsWith('feedback') ? 'feedback' : 'playing') : 'start')
-      const [playerName,     setPlayerName]     = useState(preview ? 'Platon' : '')
-      const [playerDept,     setPlayerDept]     = useState(preview ? 'Agile' : null)
-      const [playerId,       setPlayerId]       = useState(preview ? 'preview' : null)
-      const [questions,      setQuestions]      = useState(preview ? [PREVIEW_QUESTION] : [])
-      const [currentIndex,   setCurrentIndex]   = useState(0)
-      const [selectedAnswer, setSelectedAnswer] = useState(preview?.startsWith('feedback') ? (preview === 'feedback-wrong' ? 0 : 1) : null)
-      const [isCorrect,      setIsCorrect]      = useState(preview?.startsWith('feedback') ? (preview !== 'feedback-wrong') : null)
-      const [score,          setScore]          = useState(preview ? 240 : 0)
-      const [streak,         setStreak]         = useState(preview ? 3 : 0)
-      const [maxStreak,      setMaxStreak]      = useState(preview ? 3 : 0)
-      const [loading,        setLoading]        = useState(false)
-
-      // ── Start ──────────────────────────────────────────────────────────────
-      const startGame = useCallback(async (name, dept) => {
-        setLoading(true)
-        setPlayerName(name)
-        setPlayerDept(dept)
-
-        // Load terms (all departments)
-        const allTerms = await dbFetchTerms() ?? FALLBACK_TERMS
-        const picked   = shuffle(allTerms).slice(0, QUESTIONS_PER_GAME)
-        setQuestions(picked)
-
-        // Resolve player — look up by name in dictionary, otherwise upsert
-        let resolvedId = null
-        const key = name.toLowerCase()
+      let resolvedId = null
+      try { const d = JSON.parse(localStorage.getItem('nod_players') || '{}'); if (d[key]) resolvedId = d[key] } catch {}
+      if (!resolvedId) {
+        const p = await dbUpsertPlayer(name)
+        if (p) resolvedId = p.id
+      }
+      if (resolvedId) {
+        setPlayerId(resolvedId)
         try {
-          const dict = JSON.parse(localStorage.getItem('nod_players') || '{}')
-          if (dict[key]) resolvedId = dict[key]
+          const d = JSON.parse(localStorage.getItem('nod_players') || '{}')
+          d[key] = resolvedId
+          localStorage.setItem('nod_players', JSON.stringify(d))
+          localStorage.setItem('nod_last_name', name)
         } catch {}
-
-        if (!resolvedId) {
-          const player = await dbUpsertPlayer(name)
-          if (player) resolvedId = player.id
+        if (db) {
+          const { data } = await db.from('players').select('games_played').eq('id', resolvedId).single()
+          if (data) setGamesPlayed(data.games_played || 0)
         }
+      }
 
-        if (resolvedId) {
-          setPlayerId(resolvedId)
-          try {
-            const dict = JSON.parse(localStorage.getItem('nod_players') || '{}')
-            dict[key] = resolvedId
-            localStorage.setItem('nod_players', JSON.stringify(dict))
-            localStorage.setItem('nod_last_name', name)
-          } catch {}
-        }
+      try { if (localStorage.getItem(`nod_played_${key}`) === todayStr()) { setLoading(false); setScreen('daily_done'); return } } catch {}
 
-        // Reset state
-        setCurrentIndex(0)
-        setScore(0)
-        setStreak(0)
-        setMaxStreak(0)
-        setSelectedAnswer(null)
-        setIsCorrect(null)
+      let savedDept = null
+      try { savedDept = localStorage.getItem(`nod_dept_${key}`) || null } catch {}
+      setLoading(false)
+      if (savedDept) { setPlayerDept(savedDept); await startGame(name, resolvedId, savedDept) }
+      else setScreen('discipline')
+    }, [])
 
-        setLoading(false)
-        setScreen('playing')
-      }, [])
+    const handleDisciplineSelect = useCallback(async (dept) => {
+      setPlayerDept(dept)
+      try { localStorage.setItem(`nod_dept_${playerName.toLowerCase()}`, dept) } catch {}
+      await startGame(playerName, playerId, dept)
+    }, [playerName, playerId])
 
-      // ── Answer ─────────────────────────────────────────────────────────────
-      const handleAnswer = useCallback((answerIndex) => {
-        const q       = questions[currentIndex]
-        const correct = answerIndex === q.correct_index
+    const startGame = useCallback(async (name, id, dept) => {
+      setLoading(true)
+      const all  = await dbFetchTerms() ?? FALLBACK_TERMS
+      const pick = shuffle(all).slice(0, QUESTIONS_PER_GAME)
+      setQuestions(pick)
+      setCurrentIndex(0); setScore(0); setStreak(0); setMaxStreak(0)
+      setSelectedAnswer(null); setIsCorrect(null)
+      setLoading(false); setScreen('playing')
+    }, [])
 
-        setSelectedAnswer(answerIndex)
-        setIsCorrect(correct)
+    const handleAnswer = useCallback((idx) => {
+      const q       = questions[currentIndex]
+      const correct = idx === q.correct_index
+      const isCross = playerDept && q.department !== playerDept
+      setSelectedAnswer(idx); setIsCorrect(correct)
+      if (correct) {
+        const ns = streak + 1
+        setScore(s => s + PTS_CORRECT + (ns >= STREAK_BONUS_AT ? STREAK_BONUS : 0) + (isCross ? CROSS_BONUS : 0))
+        setStreak(ns); setMaxStreak(m => Math.max(m, ns))
+      } else { setStreak(0) }
+      setScreen('feedback')
+    }, [questions, currentIndex, streak, playerDept])
 
-        if (correct) {
-          const newStreak = streak + 1
-          const bonus     = newStreak >= STREAK_BONUS_AT ? STREAK_BONUS : 0
-          setScore(s => s + PTS_CORRECT + bonus)
-          setStreak(newStreak)
-          setMaxStreak(m => Math.max(m, newStreak))
-        } else {
-          setStreak(0)
-        }
+    const handleNext = useCallback(async () => {
+      const next = currentIndex + 1
+      if (next >= questions.length) {
+        await dbSaveResult({ playerId, scoreGained:score, maxStreak })
+        try { localStorage.setItem(`nod_played_${playerName.toLowerCase()}`, todayStr()) } catch {}
+        setScreen('summary')
+      } else {
+        setCurrentIndex(next); setSelectedAnswer(null); setIsCorrect(null); setScreen('playing')
+      }
+    }, [currentIndex, questions.length, playerId, score, maxStreak, playerName])
 
-        setScreen('feedback')
-      }, [questions, currentIndex, streak])
+    const playAgain = useCallback(() => {
+      const key = playerName.toLowerCase()
+      const dept = playerDept || (() => { try { return localStorage.getItem(`nod_dept_${key}`) } catch { return null } })()
+      startGame(playerName, playerId, dept)
+    }, [playerName, playerId, playerDept, startGame])
 
-      // ── Next ───────────────────────────────────────────────────────────────
-      const handleNext = useCallback(async () => {
-        const next = currentIndex + 1
-        if (next >= questions.length) {
-          await dbSaveResult({ playerId, scoreGained: score, maxStreak })
-          setScreen('summary')
-        } else {
-          setCurrentIndex(next)
-          setSelectedAnswer(null)
-          setIsCorrect(null)
-          setScreen('playing')
-        }
-      }, [currentIndex, questions.length, playerId, score, maxStreak])
+    const q = questions[currentIndex]
 
-      // ── Play again ─────────────────────────────────────────────────────────
-      const playAgain = useCallback(() => startGame(playerName, playerDept), [startGame, playerName, playerDept])
+    return (
+      <div style={{ width:'100%', minHeight:'100dvh' }}>
+        {screen === 'start'       && <StartScreen     onStart={handleNameSubmit} loading={loading} />}
+        {screen === 'discipline'  && <DisciplineScreen onSelect={handleDisciplineSelect} />}
+        {screen === 'playing'     && q && <ChallengeCard question={q} questionNumber={currentIndex+1} totalQuestions={QUESTIONS_PER_GAME} streak={streak} score={score} playerDept={playerDept} onAnswer={handleAnswer} />}
+        {screen === 'feedback'    && q && <FeedbackScreen question={q} selectedAnswer={selectedAnswer} isCorrect={isCorrect} streak={streak} onNext={handleNext} isLast={currentIndex === questions.length-1} />}
+        {screen === 'summary'     && <SummaryScreen    playerName={playerName} score={score} totalQuestions={QUESTIONS_PER_GAME} maxStreak={maxStreak} onLeaderboard={() => setScreen('leaderboard')} onPlayAgain={playAgain} onLibrary={() => setScreen('library')} />}
+        {screen === 'leaderboard' && <LeaderboardScreen playerId={playerId} playerName={playerName} onPlayAgain={playAgain} />}
+        {screen === 'library'     && <LibraryScreen    onBack={() => setScreen('summary')} />}
+        {screen === 'profile'     && <ProfileScreen    playerId={playerId} playerName={playerName} playerDept={playerDept} onBack={() => setScreen('start')} />}
+        {screen === 'daily_done'  && <DailyDoneScreen  streak={gamesPlayed} onLeaderboard={() => setScreen('leaderboard')} onLibrary={() => setScreen('library')} />}
+        {loading && (
+          <div style={{ position:'fixed', inset:0, background:'rgba(192,212,234,0.45)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:999 }}>
+            <div style={{ width:36, height:36, border:'3px solid rgba(26,25,24,0.12)', borderTopColor:'#1A1918', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
+          </div>
+        )}
+        <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
 
-      const q = questions[currentIndex]
-
-      return (
-        <div className="w-full max-w-[420px] mx-auto flex flex-col min-h-dvh">
-          {screen === 'start'       && <StartScreen    onStart={startGame} loading={loading} />}
-          {screen === 'playing'     && q && <ChallengeCard question={q} questionNumber={currentIndex+1} totalQuestions={QUESTIONS_PER_GAME} streak={streak} score={score} onAnswer={handleAnswer} />}
-          {screen === 'feedback'    && q && <FeedbackScreen question={q} selectedAnswer={selectedAnswer} isCorrect={isCorrect} streak={streak} onNext={handleNext} isLast={currentIndex === questions.length - 1} />}
-          {screen === 'summary'     && <SummaryScreen  playerName={playerName} playerDept={playerDept} score={score} totalQuestions={QUESTIONS_PER_GAME} maxStreak={maxStreak} onLeaderboard={() => setScreen('leaderboard')} onPlayAgain={playAgain} />}
-          {screen === 'leaderboard' && <Leaderboard    playerId={playerId} playerName={playerName} onPlayAgain={playAgain} />}
-        </div>
-      )
-    }
-
-    // ── Mount ──────────────────────────────────────────────────────────────────
-    const root = ReactDOM.createRoot(document.getElementById('root'))
-    root.render(<App />)
-  </script>
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+</script>
 </body>
 </html>
