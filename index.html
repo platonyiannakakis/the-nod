@@ -530,12 +530,18 @@
   }
 
   function ChallengeCard({ question, questionNumber, totalQuestions, streak, score, playerDept, onAnswer }) {
+    const [bg]     = useState(() => BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)])
     const progress = ((questionNumber-1) / totalQuestions) * 100
     const isCross  = playerDept && question.department !== playerDept
     const dept     = getDept(question.department)
     return (
       <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column' }} className="anim-up">
-        {/* Challenge — Right: bird(top:0) + lizard(bottom:18%) → gap 10dvh | Left: mushroom alone */}
+        {/* Background photo */}
+        <img src={bg} alt="" aria-hidden="true" style={{
+          position:'absolute', inset:0, width:'100%', height:'100%',
+          objectFit:'cover', objectPosition:'center', zIndex:0, pointerEvents:'none',
+        }} />
+        {/* Illustrations — left: mushroom, right: bird + lizard */}
         <Deco src={E.bird}     style={{ top:0,        right:'8%', maxWidth:'clamp(240px,36vw,600px)', maxHeight:'66vh' }} opacity={0.10} rotate={-15} />
         <Deco src={E.mushroom} style={{ bottom:0,     left:'4%', maxWidth:'clamp(300px,45vw,780px)', maxHeight:'90vh' }} opacity={0.10} rotate={8}  />
         <Deco src={E.lizard}   style={{ bottom:'18%', right:0,   maxWidth:'clamp(195px,27vw,480px)', maxHeight:'60vh' }} opacity={0.09} rotate={-8} />
