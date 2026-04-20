@@ -268,16 +268,18 @@
   }
   async function dbSaveResult({ playerId, scoreGained, maxStreak }) {
     if (!db || !playerId) return
-    const { data: p } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
+    const { data: p, error: selErr } = await db.from('players').select('score,max_streak,games_played').eq('id', playerId).single()
+    if (selErr) { console.error('[NOD] dbSaveResult SELECT error:', selErr.message, selErr); return }
     if (!p) return
     const ng = p.games_played + 1
-    await db.from('players').update({ score: p.score+scoreGained, max_streak: Math.max(p.max_streak, maxStreak), games_played: ng, updated_at: new Date().toISOString() }).eq('id', playerId)
+    const { error: updErr } = await db.from('players').update({ score: p.score+scoreGained, max_streak: Math.max(p.max_streak, maxStreak), games_played: ng, updated_at: new Date().toISOString() }).eq('id', playerId)
+    if (updErr) { console.error('[NOD] dbSaveResult UPDATE error:', updErr.message, updErr); return }
     await db.from('game_sessions').insert({ player_id: playerId, game_number: ng, score: scoreGained })
   }
   async function dbFetchLeaderboard() {
     if (!db) return null
     const { data, error } = await db.from('players').select('id,name,score,max_streak,games_played').order('score', { ascending:false }).limit(10)
-    if (error) return null
+    if (error) { console.error('[NOD] leaderboard fetch error:', error.message, error); return null }
     return data
   }
   function dbSubscribeLb(cb) {
@@ -308,11 +310,17 @@
     const [savedName, setSavedName] = useState('')
     const [returning, setReturning] = useState(false)
     const [countdown, setCountdown] = useState(timeToMidnight())
+    const [wordCount, setWordCount] = useState(0)
 
     useEffect(() => {
       try {
         const last = localStorage.getItem('nod_last_name')
-        if (last) { setName(last); setSavedName(last); setReturning(true) }
+        if (last) {
+          setName(last); setSavedName(last); setReturning(true)
+          // Load word count for this player
+          const words = JSON.parse(localStorage.getItem(`nod_words_${last.toLowerCase()}`) || '[]')
+          setWordCount(words.length)
+        }
       } catch {}
       const t = setInterval(() => setCountdown(timeToMidnight()), 1000)
       return () => clearInterval(t)
@@ -372,13 +380,16 @@
         </form>
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
-          {[{ e:'📖', t:'Words collected', s:'your glossary' }, { e:'🏆', t:'Leaderboard', s:'company-wide' }].map(({ e, t, s }) => (
-            <div key={t} style={{ background:'rgba(255,255,255,0.75)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)' }}>
-              <div style={{ fontSize:'1.2rem', marginBottom:4 }}>{e}</div>
-              <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>{t}</div>
-              <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>{s}</div>
+          <div style={{ background:'rgba(255,255,255,0.75)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize:'1.2rem', marginBottom:4 }}>📖</div>
+              <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>Words collected</div>
+              <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>{wordCount > 0 ? `${wordCount} terms seen` : 'your glossary'}</div>
             </div>
-          ))}
+            <div style={{ background:'rgba(255,255,255,0.75)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize:'1.2rem', marginBottom:4 }}>🏆</div>
+              <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>Leaderboard</div>
+              <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>company-wide</div>
+            </div>
         </div>
 
         <div style={{ textAlign:'center', fontSize:'0.78rem', color:'rgba(26,25,24,0.4)' }}>
@@ -639,10 +650,18 @@
   function LeaderboardScreen({ playerId, playerName, onPlayAgain }) {
     const [leaders, setLeaders] = useState([])
     const [loading, setLoading] = useState(true)
+    const [fetchError, setFetchError] = useState(null)
     useEffect(() => {
-      let u = () => {}
-      dbFetchLeaderboard().then(d => { setLeaders(d ?? []); setLoading(false); u = dbSubscribeLb(setLeaders) })
-      return () => u()
+      let unsub = () => {}
+      let cancelled = false
+      dbFetchLeaderboard().then(d => {
+        if (cancelled) return
+        if (d === null) setFetchError('Could not load scores.')
+        setLeaders(d ?? [])
+        setLoading(false)
+        if (d !== null) unsub = dbSubscribeLb(cb => { if (!cancelled) setLeaders(cb) })
+      })
+      return () => { cancelled = true; unsub() }
     }, [])
 
     const top3 = leaders.slice(0,3), rest = leaders.slice(3)
@@ -688,6 +707,11 @@
           </div>
         )}
         {loading && <p style={{ textAlign:'center', color:'rgba(26,25,24,0.4)', fontSize:'0.9rem', marginBottom:20 }}>Loading…</p>}
+        {!loading && fetchError && (
+          <div style={{ background:'rgba(255,255,255,0.75)', borderRadius:16, padding:'14px 16px', marginBottom:16, textAlign:'center' }}>
+            <p style={{ margin:0, fontSize:'0.9rem', color:'#C84040', fontStyle:'italic' }}>Scores unavailable — check the browser console for details.</p>
+          </div>
+        )}
 
         {rest.length > 0 && (
           <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:14 }}>
@@ -883,10 +907,12 @@
     const [maxStreak,      setMaxStreak]      = useState(0)
     const [loading,        setLoading]        = useState(false)
     const [gamesPlayed,    setGamesPlayed]    = useState(0)
+    const pendingName = React.useRef('')  // holds the name being processed, avoids stale closure in discipline
 
     const handleNameSubmit = useCallback(async (name) => {
       setLoading(true)
       setPlayerName(name)
+      pendingName.current = name          // store for discipline screen
       const key = name.toLowerCase()
 
       let resolvedId = null
@@ -919,9 +945,10 @@
     }, [])
 
     const handleDisciplineSelect = useCallback(async (dept) => {
+      const name = pendingName.current || playerName   // use ref first — always correct
       setPlayerDept(dept)
-      try { localStorage.setItem(`nod_dept_${playerName.toLowerCase()}`, dept) } catch {}
-      await startGame(playerName, playerId, dept)
+      try { localStorage.setItem(`nod_dept_${name.toLowerCase()}`, dept) } catch {}
+      await startGame(name, playerId, dept)
     }, [playerName, playerId])
 
     const startGame = useCallback(async (name, id, dept) => {
@@ -944,8 +971,15 @@
         setScore(s => s + PTS_CORRECT + (ns >= STREAK_BONUS_AT ? STREAK_BONUS : 0) + (isCross ? CROSS_BONUS : 0))
         setStreak(ns); setMaxStreak(m => Math.max(m, ns))
       } else { setStreak(0) }
+      // Save term to player's local word collection (all answered terms, win or lose)
+      try {
+        const key   = (pendingName.current || playerName).toLowerCase()
+        const termId = q.id || q.term
+        const words  = JSON.parse(localStorage.getItem(`nod_words_${key}`) || '[]')
+        if (!words.includes(termId)) { words.push(termId); localStorage.setItem(`nod_words_${key}`, JSON.stringify(words)) }
+      } catch {}
       setScreen('feedback')
-    }, [questions, currentIndex, streak, playerDept])
+    }, [questions, currentIndex, streak, playerDept, playerName])
 
     const handleNext = useCallback(async () => {
       const next = currentIndex + 1
