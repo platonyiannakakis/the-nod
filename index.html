@@ -151,25 +151,7 @@
     'background/3.jpg', 'background/4.jpg',
   ]
 
-  // ── 10 non-overlapping zones (5 left + 5 right) ──────────────────────────
-  // Using vh (not dvh) for Safari compatibility. Left/right offsets scatter
-  // elements across the screen so they're not all pinned to the edges.
-  const ZONES = [
-    // ── LEFT (varied inward offsets) — all values × 3 ──
-    { left:'0',    top:'0vh',  mH:'60vh', mW:'clamp(210px,36vw,600px)'  },
-    { left:'8%',   top:'30vh', mH:'33vh', mW:'clamp(126px,21vw,360px)'  },
-    { left:'2%',   top:'47vh', mH:'39vh', mW:'clamp(156px,24vw,450px)'  },
-    { left:'10%',  top:'67vh', mH:'30vh', mW:'clamp(114px,18vw,300px)'  },
-    { left:'0',    bot:'0',    mH:'39vh', mW:'clamp(156px,24vw,480px)'  },
-    // ── RIGHT (offset vertical rhythm for asymmetry) ──
-    { right:'8%',  top:'0vh',  mH:'39vh', mW:'clamp(156px,24vw,480px)'  },
-    { right:'0',   top:'20vh', mH:'30vh', mW:'clamp(114px,18vw,300px)'  },
-    { right:'5%',  top:'35vh', mH:'42vh', mW:'clamp(165px,27vw,510px)'  },
-    { right:'12%', top:'57vh', mH:'33vh', mW:'clamp(126px,21vw,390px)'  },
-    { right:'0',   bot:'0',    mH:'51vh', mW:'clamp(186px,30vw,630px)'  },
-  ]
-
-  // ── Deco: entrance animation only — all randomness comes from ScreenDecos ─
+  // ── Deco: single illustration with entrance animation ───────────────────
   function Deco({ src, style = {}, opacity = 0.13, rotate = 0, flip = false, fixed = false }) {
     const [delay] = useState(() => +(Math.random() * 0.65).toFixed(2))
     const { maxWidth, maxHeight, width, height, ...wrapStyle } = style
@@ -191,23 +173,37 @@
     )
   }
 
-  // ── ScreenDecos: 10 illustrations, fully random each mount ──────────────
+  // ── ScreenDecos: 10 illustrations scattered randomly across the full screen ──
+  // No fixed zones — positions are re-randomised every time a screen mounts.
   function ScreenDecos({ fixed = false }) {
     const [items] = useState(() => {
-      const imgs = shuffle(Object.values(E))   // random order from all 14
-      return ZONES.map((z, i) => ({
-        src:     imgs[i % imgs.length],
-        rotate:  +((Math.random() - 0.5) * 32).toFixed(1),   // ±16°
-        flip:    Math.random() > 0.5,
-        opacity: +(0.07 + Math.random() * 0.09).toFixed(2),  // 0.07–0.16
-        posStyle: {
-          ...(z.left  !== undefined ? { left:  z.left  } : {}),
-          ...(z.right !== undefined ? { right: z.right } : {}),
-          ...(z.top   !== undefined ? { top:   z.top   } : { bottom: z.bot }),
-          maxHeight: z.mH,
-          maxWidth:  z.mW,
-        },
-      }))
+      const imgs = shuffle(Object.values(E))
+      return Array.from({ length: 10 }, (_, i) => {
+        // horizontal: left OR right, 0–62% inset so element is well inside the screen
+        const useRight = Math.random() > 0.5
+        const xPct     = Math.floor(Math.random() * 62)
+        // vertical: mostly top-anchored (0–85vh), occasionally bottom-anchored (0–20vh)
+        const useBot   = Math.random() > 0.78
+        const topVh    = Math.floor(Math.random() * 85)
+        const botVh    = Math.floor(Math.random() * 20)
+        // size: keep the large scale the user approved
+        const mHVh     = 28 + Math.floor(Math.random() * 40)      // 28–68vh
+        const mWPx     = 110 + Math.floor(Math.random() * 110)    // 110–220px floor
+        const mWVw     = 18  + Math.floor(Math.random() * 20)     // 18–38vw
+        const mWMax    = 320 + Math.floor(Math.random() * 320)    // 320–640px ceiling
+        return {
+          src:     imgs[i % imgs.length],
+          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),      // ±20°
+          flip:    Math.random() > 0.5,
+          opacity: +(0.07 + Math.random() * 0.09).toFixed(2),     // 0.07–0.16
+          posStyle: {
+            ...(useRight ? { right: `${xPct}%` } : { left: `${xPct}%` }),
+            ...(useBot   ? { bottom: `${botVh}vh` } : { top: `${topVh}vh` }),
+            maxHeight: `${mHVh}vh`,
+            maxWidth:  `clamp(${mWPx}px,${mWVw}vw,${mWMax}px)`,
+          },
+        }
+      })
     })
     return (
       <>
