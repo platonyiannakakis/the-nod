@@ -36,21 +36,21 @@
     .btn-ghost:active { opacity: 0.6; }
 
     .option-btn {
-      background: rgba(255,255,255,0.58); color: #1A1918; font-weight: 500;
+      background: rgba(255,255,255,0.72); color: #1A1918; font-weight: 500;
       border: 1.5px solid transparent; border-radius: 16px;
       box-shadow: 0 1px 10px rgba(0,0,0,0.07); cursor: pointer;
       transition: box-shadow 0.12s, transform 0.1s;
       user-select: none; text-align: left; width: 100%;
       font-family: 'Cormorant Garamond', serif;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     }
     .option-btn:active { transform: scale(0.985); }
 
     .card {
-      background: rgba(255,255,255,0.58);
+      background: rgba(255,255,255,0.72);
       border-radius: 20px;
       box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     }
 
     /* Content column — narrow on mobile, wider on desktop */
@@ -173,27 +173,28 @@
     )
   }
 
-  // ── ScreenDecos: 10 illustrations spread across the whole screen ───────────
-  // Screen is divided into 10 vertical bands (10vh each). One element lands in
-  // each band — guaranteed spread, no clustering. 5 left / 5 right, shuffled.
+  // ── ScreenDecos: 10 illustrations lining both sides of the screen ───────────
+  // Divided into 10 vertical bands (10vh each) → no vertical clustering.
+  // Horizontal offset is kept small (0–10% from edge) so illustrations live in
+  // the gutters beside the content column and never drift into the center.
   function ScreenDecos({ fixed = false }) {
     const [items] = useState(() => {
       const imgs      = shuffle(Object.values(E))
       const bandOrder = shuffle([0,1,2,3,4,5,6,7,8,9])   // each band used exactly once
       const sideList  = shuffle([0,0,0,0,0,1,1,1,1,1])   // exactly 5 left, 5 right
       return Array.from({ length: 10 }, (_, i) => {
-        const topVh  = bandOrder[i] * 10 + Math.floor(Math.random() * 8)  // within band
-        const xPct   = Math.floor(Math.random() * 58)   // 0–58% inset from chosen edge
+        const topVh    = bandOrder[i] * 10 + Math.floor(Math.random() * 8)  // within band
+        const xPct     = Math.floor(Math.random() * 10)  // 0–10% — hug the edge
         const useRight = sideList[i] === 1
-        const mHVh   = 28 + Math.floor(Math.random() * 40)     // 28–68vh
-        const mWPx   = 110 + Math.floor(Math.random() * 110)   // 110–220px floor
-        const mWVw   = 18  + Math.floor(Math.random() * 20)    // 18–38vw
-        const mWMax  = 320 + Math.floor(Math.random() * 320)   // 320–640px ceiling
+        const mHVh     = 28 + Math.floor(Math.random() * 40)    // 28–68vh
+        const mWPx     = 110 + Math.floor(Math.random() * 110)  // 110–220px floor
+        const mWVw     = 18  + Math.floor(Math.random() * 20)   // 18–38vw
+        const mWMax    = 320 + Math.floor(Math.random() * 320)  // 320–640px ceiling
         return {
           src:     imgs[i % imgs.length],
-          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),   // ±20°
+          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),    // ±20°
           flip:    Math.random() > 0.5,
-          opacity: +(0.07 + Math.random() * 0.09).toFixed(2),  // 0.07–0.16
+          opacity: +(0.08 + Math.random() * 0.10).toFixed(2),   // 0.08–0.18
           posStyle: {
             ...(useRight ? { right: `${xPct}%` } : { left: `${xPct}%` }),
             top: `${topVh}vh`,
