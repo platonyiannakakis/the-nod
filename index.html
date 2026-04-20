@@ -308,6 +308,7 @@
   function StartScreen({ onStart, loading }) {
     const [name,      setName]      = useState('')
     const [savedName, setSavedName] = useState('')
+    const [savedDept, setSavedDept] = useState('')
     const [returning, setReturning] = useState(false)
     const [countdown, setCountdown] = useState(timeToMidnight())
     const [wordCount, setWordCount] = useState(0)
@@ -317,9 +318,11 @@
         const last = localStorage.getItem('nod_last_name')
         if (last) {
           setName(last); setSavedName(last); setReturning(true)
-          // Load word count for this player
-          const words = JSON.parse(localStorage.getItem(`nod_words_${last.toLowerCase()}`) || '[]')
+          const key = last.toLowerCase()
+          const words = JSON.parse(localStorage.getItem(`nod_words_${key}`) || '[]')
           setWordCount(words.length)
+          const dept = localStorage.getItem(`nod_dept_${key}`) || ''
+          setSavedDept(dept)
         }
       } catch {}
       const t = setInterval(() => setCountdown(timeToMidnight()), 1000)
@@ -360,7 +363,15 @@
 
         {returning && (
           <div style={{ background:'rgba(255,247,214,0.92)', borderRadius:20, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-            <span style={{ fontWeight:600, color:'#1A1918', fontSize:'0.95rem' }}>Welcome back, {savedName} 👋</span>
+            <div>
+              <span style={{ fontWeight:600, color:'#1A1918', fontSize:'0.95rem' }}>Welcome back, {savedName} 👋</span>
+              {savedDept && (
+                <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:3 }}>
+                  <span style={{ width:7, height:7, borderRadius:'50%', background:getDept(savedDept).dot, display:'inline-block', flexShrink:0 }} />
+                  <span style={{ fontSize:'0.75rem', color:'#8A8A88', fontStyle:'italic' }}>{savedDept}</span>
+                </div>
+              )}
+            </div>
             <button onClick={() => setReturning(false)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'0.72rem', fontWeight:600, color:'#8A8A88', textDecoration:'underline', fontFamily:'inherit' }}>Not you?</button>
           </div>
         )}
@@ -664,10 +675,8 @@
       return () => { cancelled = true; unsub() }
     }, [])
 
-    const top3 = leaders.slice(0,3), rest = leaders.slice(3)
-    const now = new Date()
-    const daysLeft = Math.ceil((new Date(now.getFullYear(), now.getMonth()+1, 0) - now) / 86400000)
-    const month    = now.toLocaleString('default', { month:'long', year:'numeric' })
+    const top3  = leaders.slice(0,3)
+    const month = new Date().toLocaleString('default', { month:'long', year:'numeric' })
 
     // Podium order: 2nd | 1st | 3rd
     const podium = [1, 0, 2]
@@ -689,16 +698,16 @@
 
         {!loading && top3.length >= 1 && (
           <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center', gap:'clamp(8px,2vw,20px)', marginBottom:20 }}>
-            {podium.map(rank => {
+            {podium.map((rank, posIdx) => {
               const p = top3[rank]
-              if (!p) return <div key={rank} style={{ width:bSize[rank] }} />
+              if (!p) return <div key={rank} style={{ width:bSize[posIdx] }} />
               const isMe = p.id === playerId || p.name?.toLowerCase() === playerName?.toLowerCase()
               return (
                 <div key={rank} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:5 }}>
-                  <span style={{ fontSize:'0.78rem', fontWeight:600, fontStyle:'italic', color:'#1A1918' }}>{p.name}{isMe?' you':''}</span>
-                  <div style={{ width:bSize[rank], height:bSize[rank], borderRadius:'50%', background:BALL[rank].bg, boxShadow:`0 8px 24px ${BALL[rank].sh}` }} />
+                  <span style={{ fontSize:'0.78rem', fontWeight:600, fontStyle:'italic', color:'#1A1918' }}>{p.name}{isMe?' · you':''}</span>
+                  <div style={{ width:bSize[posIdx], height:bSize[posIdx], borderRadius:'50%', background:BALL[rank].bg, boxShadow:`0 8px 24px ${BALL[rank].sh}` }} />
                   <span style={{ fontWeight:700, fontSize:'clamp(0.9rem,2vw,1.1rem)', color:'#1A1918' }}>{p.score}</span>
-                  <div style={{ width:'100%', height:pH[rank], background:'rgba(255,255,255,0.75)', borderRadius:'10px 10px 0 0', display:'flex', alignItems:'flex-start', justifyContent:'center', paddingTop:8 }}>
+                  <div style={{ width:'100%', height:pH[posIdx], background:'rgba(255,255,255,0.75)', borderRadius:'10px 10px 0 0', display:'flex', alignItems:'flex-start', justifyContent:'center', paddingTop:8 }}>
                     <span style={{ fontSize:'1.1rem' }}>{rank===0?'🥇':rank===1?'🥈':'🥉'}</span>
                   </div>
                 </div>
@@ -713,28 +722,9 @@
           </div>
         )}
 
-        {rest.length > 0 && (
-          <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:14 }}>
-            {rest.map((p, i) => {
-              const isMe = p.id === playerId || p.name?.toLowerCase() === playerName?.toLowerCase()
-              return (
-                <div key={p.id} style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px', borderRadius:16, background: isMe ? 'rgba(255,247,214,0.88)' : 'rgba(255,255,255,0.75)', boxShadow:'0 1px 8px rgba(0,0,0,0.05)' }}>
-                  <span style={{ fontWeight:700, fontSize:'0.82rem', color:'#8A8A88', width:20 }}>{i+4}</span>
-                  <span style={{ flex:1, fontWeight:600, fontSize:'0.95rem', fontStyle:'italic', color:'#1A1918' }}>{p.name}{isMe?' (you)':''}</span>
-                  <span style={{ fontWeight:700, fontSize:'1rem', color:'#1A1918' }}>{p.score}<span style={{ fontWeight:300, fontSize:'0.72rem', color:'#8A8A88' }}> pts</span></span>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
-          {[{ label:'Resets in', val:`${daysLeft} days` }, { label:'Playing', val:`${leaders.length} teammates` }].map(({ label, val }) => (
-            <div key={label} style={{ background:'rgba(255,255,255,0.7)', borderRadius:16, padding:'12px 14px' }}>
-              <p style={{ fontSize:'0.7rem', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A8A88', margin:'0 0 2px' }}>{label}</p>
-              <p style={{ fontWeight:600, fontSize:'clamp(0.95rem,2.2vw,1.1rem)', color:'#1A1918', margin:0 }}>{val}</p>
-            </div>
-          ))}
+        <div style={{ background:'rgba(255,255,255,0.7)', borderRadius:16, padding:'12px 14px', marginBottom:16 }}>
+          <p style={{ fontSize:'0.7rem', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A8A88', margin:'0 0 2px' }}>Playing</p>
+          <p style={{ fontWeight:600, fontSize:'clamp(0.95rem,2.2vw,1.1rem)', color:'#1A1918', margin:0 }}>{leaders.length} teammates</p>
         </div>
 
         <button onClick={onPlayAgain} className="btn-primary" style={{ width:'100%', padding:'16px', fontSize:'1.05rem' }}>
