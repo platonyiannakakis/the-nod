@@ -897,6 +897,7 @@
     const [maxStreak,      setMaxStreak]      = useState(0)
     const [loading,        setLoading]        = useState(false)
     const [gamesPlayed,    setGamesPlayed]    = useState(0)
+    const [dayStreak,      setDayStreak]      = useState(0)
     const pendingName = React.useRef('')  // holds the name being processed, avoids stale closure in discipline
 
     const handleNameSubmit = useCallback(async (name) => {
@@ -925,7 +926,12 @@
         }
       }
 
-      try { if (localStorage.getItem(`nod_played_${key}`) === todayStr()) { setLoading(false); setScreen('daily_done'); return } } catch {}
+      try {
+        if (localStorage.getItem(`nod_played_${key}`) === todayStr()) {
+          setDayStreak(parseInt(localStorage.getItem(`nod_streak_${key}`) || '1'))
+          setLoading(false); setScreen('daily_done'); return
+        }
+      } catch {}
 
       let savedDept = null
       try { savedDept = localStorage.getItem(`nod_dept_${key}`) || null } catch {}
@@ -975,7 +981,20 @@
       const next = currentIndex + 1
       if (next >= questions.length) {
         await dbSaveResult({ playerId, scoreGained:score, maxStreak })
-        try { localStorage.setItem(`nod_played_${playerName.toLowerCase()}`, todayStr()) } catch {}
+        try {
+          const key = (pendingName.current || playerName).toLowerCase()
+          const today = todayStr()
+          const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1)
+          const yStr = yesterday.toISOString().slice(0, 10)
+          const lastPlayed = localStorage.getItem(`nod_played_${key}`)
+          // If they played yesterday → consecutive streak, else reset to 1
+          const newStreak = lastPlayed === yStr
+            ? parseInt(localStorage.getItem(`nod_streak_${key}`) || '0') + 1
+            : 1
+          localStorage.setItem(`nod_streak_${key}`, String(newStreak))
+          localStorage.setItem(`nod_played_${key}`, today)
+          setDayStreak(newStreak)
+        } catch {}
         setScreen('summary')
       } else {
         setCurrentIndex(next); setSelectedAnswer(null); setIsCorrect(null); setScreen('playing')
@@ -984,6 +1003,12 @@
 
     const playAgain = useCallback(() => {
       const key = playerName.toLowerCase()
+      try {
+        if (localStorage.getItem(`nod_played_${key}`) === todayStr()) {
+          setDayStreak(parseInt(localStorage.getItem(`nod_streak_${key}`) || '1'))
+          setScreen('daily_done'); return
+        }
+      } catch {}
       const dept = playerDept || (() => { try { return localStorage.getItem(`nod_dept_${key}`) } catch { return null } })()
       startGame(playerName, playerId, dept)
     }, [playerName, playerId, playerDept, startGame])
@@ -1000,7 +1025,7 @@
         {screen === 'leaderboard' && <LeaderboardScreen playerId={playerId} playerName={playerName} onPlayAgain={playAgain} />}
         {screen === 'library'     && <LibraryScreen    onBack={() => setScreen('summary')} />}
         {screen === 'profile'     && <ProfileScreen    playerId={playerId} playerName={playerName} playerDept={playerDept} onBack={() => setScreen('start')} />}
-        {screen === 'daily_done'  && <DailyDoneScreen  streak={gamesPlayed} onLeaderboard={() => setScreen('leaderboard')} onLibrary={() => setScreen('library')} />}
+        {screen === 'daily_done'  && <DailyDoneScreen  streak={dayStreak} onLeaderboard={() => setScreen('leaderboard')} onLibrary={() => setScreen('library')} />}
         {loading && (
           <div style={{ position:'fixed', inset:0, background:'rgba(192,212,234,0.45)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:999 }}>
             <div style={{ width:36, height:36, border:'3px solid rgba(26,25,24,0.12)', borderTopColor:'#1A1918', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
