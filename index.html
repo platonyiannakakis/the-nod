@@ -68,6 +68,10 @@
     }
     @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes spin     { to   { transform: rotate(360deg); } }
+    @keyframes decoIn   {
+      from { opacity: 0; transform: scale(0.86); }
+      to   { opacity: 1; transform: scale(1);    }
+    }
 
     .anim-up   { animation: slide-up 0.3s cubic-bezier(0.22,1,0.36,1); }
     .anim-fade { animation: fade-in 0.25s ease-out; }
@@ -139,15 +143,31 @@
     mammoth:   'ELEMENTS/IMG_1112.PNG',
   }
 
-  // Deco — width is a CSS string (px or clamp())
+  // Deco — animates in with random delay + random rotation variance each mount
   function Deco({ src, style = {}, opacity = 0.13, rotate = 0, flip = false }) {
+    // New random values every time this screen mounts
+    const [delay]  = useState(() => +(Math.random() * 0.55).toFixed(2))
+    const [rotVar] = useState(() => +((Math.random() - 0.5) * 14).toFixed(1))
+
+    // Position/layout props go on the animated wrapper div
+    // Size constraints go on the img so aspect-ratio scaling works correctly
+    const { maxWidth, maxHeight, width, height, ...wrapStyle } = style
+
     return (
-      <img src={src} alt="" aria-hidden="true" style={{
+      <div style={{
         position:'absolute', pointerEvents:'none', userSelect:'none',
-        opacity, mixBlendMode:'multiply',
-        transform:`rotate(${rotate}deg) scaleX(${flip ? -1 : 1})`,
-        ...style,
-      }} />
+        animation:`decoIn 1s cubic-bezier(0.22,1,0.36,1) ${delay}s both`,
+        ...wrapStyle,
+      }}>
+        <img src={src} alt="" aria-hidden="true" style={{
+          display:'block',
+          opacity, mixBlendMode:'multiply',
+          transform:`rotate(${rotate + rotVar}deg) scaleX(${flip ? -1 : 1})`,
+          maxWidth, maxHeight,
+          ...(width  ? { width  } : {}),
+          ...(height ? { height } : {}),
+        }} />
+      </div>
     )
   }
 
