@@ -156,17 +156,17 @@
   // elements across the screen so they're not all pinned to the edges.
   const ZONES = [
     // ── LEFT (varied inward offsets) ──
-    { left:'0',    top:'0vh',  mH:'28vh', mW:'clamp(110px,20vw,370px)' },
-    { left:'10%',  top:'30vh', mH:'15vh', mW:'clamp(60px,11vw,200px)'  },
-    { left:'2%',   top:'47vh', mH:'18vh', mW:'clamp(80px,14vw,260px)'  },
-    { left:'12%',  top:'67vh', mH:'13vh', mW:'clamp(55px,10vw,165px)'  },
-    { left:'0',    bot:'0',    mH:'18vh', mW:'clamp(80px,14vw,270px)'  },
+    { left:'0',    top:'0vh',  mH:'20vh', mW:'clamp(70px,12vw,200px)'  },
+    { left:'8%',   top:'30vh', mH:'11vh', mW:'clamp(42px,7vw,120px)'   },
+    { left:'2%',   top:'47vh', mH:'13vh', mW:'clamp(52px,8vw,150px)'   },
+    { left:'10%',  top:'67vh', mH:'10vh', mW:'clamp(38px,6vw,100px)'   },
+    { left:'0',    bot:'0',    mH:'13vh', mW:'clamp(52px,8vw,160px)'   },
     // ── RIGHT (offset vertical rhythm for asymmetry) ──
-    { right:'10%', top:'0vh',  mH:'18vh', mW:'clamp(80px,14vw,270px)'  },
-    { right:'0',   top:'20vh', mH:'13vh', mW:'clamp(55px,10vw,165px)'  },
-    { right:'6%',  top:'35vh', mH:'20vh', mW:'clamp(90px,16vw,295px)'  },
-    { right:'14%', top:'57vh', mH:'15vh', mW:'clamp(65px,11vw,210px)'  },
-    { right:'0',   bot:'0',    mH:'25vh', mW:'clamp(100px,18vw,370px)' },
+    { right:'8%',  top:'0vh',  mH:'13vh', mW:'clamp(52px,8vw,160px)'   },
+    { right:'0',   top:'20vh', mH:'10vh', mW:'clamp(38px,6vw,100px)'   },
+    { right:'5%',  top:'35vh', mH:'14vh', mW:'clamp(55px,9vw,170px)'   },
+    { right:'12%', top:'57vh', mH:'11vh', mW:'clamp(42px,7vw,130px)'   },
+    { right:'0',   bot:'0',    mH:'17vh', mW:'clamp(62px,10vw,210px)'  },
   ]
 
   // ── Deco: entrance animation only — all randomness comes from ScreenDecos ─
@@ -199,7 +199,7 @@
         src:     imgs[i % imgs.length],
         rotate:  +((Math.random() - 0.5) * 32).toFixed(1),   // ±16°
         flip:    Math.random() > 0.5,
-        opacity: +(0.12 + Math.random() * 0.13).toFixed(2),  // 0.12–0.25
+        opacity: +(0.07 + Math.random() * 0.09).toFixed(2),  // 0.07–0.16
         posStyle: {
           ...(z.left  !== undefined ? { left:  z.left  } : {}),
           ...(z.right !== undefined ? { right: z.right } : {}),
@@ -538,9 +538,9 @@
     return (
       <div style={{ position:'relative', overflow:'hidden', minHeight:'100dvh', width:'100%', display:'flex', flexDirection:'column' }} className="anim-up">
         {/* Challenge — Right: bird(top:0) + lizard(bottom:18%) → gap 10dvh | Left: mushroom alone */}
-        <Deco src={E.bird}     style={{ top:0,        right:'8%', maxWidth:'clamp(130px,20vw,360px)', maxHeight:'36vh' }} opacity={0.13} rotate={-15} />
-        <Deco src={E.mushroom} style={{ bottom:0,     left:'4%', maxWidth:'clamp(200px,30vw,520px)', maxHeight:'55vh' }} opacity={0.14} rotate={8}  />
-        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,   maxWidth:'clamp(100px,15vw,280px)', maxHeight:'36vh' }} opacity={0.11} rotate={-8} />
+        <Deco src={E.bird}     style={{ top:0,        right:'8%', maxWidth:'clamp(80px,12vw,200px)', maxHeight:'22vh' }} opacity={0.10} rotate={-15} />
+        <Deco src={E.mushroom} style={{ bottom:0,     left:'4%', maxWidth:'clamp(100px,15vw,260px)', maxHeight:'30vh' }} opacity={0.10} rotate={8}  />
+        <Deco src={E.lizard}   style={{ bottom:'18%', right:0,   maxWidth:'clamp(65px,9vw,160px)',   maxHeight:'20vh' }} opacity={0.09} rotate={-8} />
 
         {isCross && (
           <div style={{ background:'#F5B800', padding:'8px 20px', display:'flex', justifyContent:'center', position:'relative', zIndex:5 }}>
