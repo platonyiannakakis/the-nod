@@ -173,35 +173,42 @@
     )
   }
 
-  // ── ScreenDecos: illustrations in the left/right gutters only ───────────────
-  // The content col is max-width:580px centered, so each gutter = 50vw - 290px.
-  // maxWidth uses exactly that formula → illustrations are PHYSICALLY INCAPABLE
-  // of reaching the content column at any viewport width.
-  // 10 vertical bands (10vh each) guarantee spread from top to bottom.
+  // Width cap = gutter beside the centered 580px content column
   const GUTTER_W = 'clamp(70px, calc(50vw - 310px), 500px)'
 
+  // ── ScreenDecos: 3 illustrations per screen, Option A layout ─────────────
+  //
+  //  Each mount randomly picks ONE of two mirror configs:
+  //    Config A  →  pair (top + bottom) on LEFT,  solo (mid) on RIGHT
+  //    Config B  →  pair (top + bottom) on RIGHT, solo (mid) on LEFT
+  //
+  //  Pair sizing: each ≤ 43vh, sum ≤ 86vh → guaranteed ≥ 14vh gap between them
+  //  Solo sizing: 40–58vh, floats in the middle third of its side
+  //  Width: GUTTER_W on both sides → can never reach the content column
+  //
   function ScreenDecos({ fixed = false }) {
     const [items] = useState(() => {
-      const imgs      = shuffle(Object.values(E))
-      const bandOrder = shuffle([0,1,2,3,4,5,6,7,8,9])
-      const sideList  = shuffle([0,0,0,0,0,1,1,1,1,1])  // exactly 5 left, 5 right
-      return Array.from({ length: 10 }, (_, i) => {
-        const topVh    = bandOrder[i] * 10 + Math.floor(Math.random() * 8)
-        const useRight = sideList[i] === 1
-        const mHVh     = 30 + Math.floor(Math.random() * 42)  // 30–72vh
-        return {
-          src:     imgs[i % imgs.length],
-          rotate:  +((Math.random() - 0.5) * 40).toFixed(1),
-          flip:    Math.random() > 0.5,
-          opacity: +(0.08 + Math.random() * 0.10).toFixed(2),
-          posStyle: {
-            ...(useRight ? { right: 0 } : { left: 0 }),
-            top: `${topVh}vh`,
-            maxHeight: `${mHVh}vh`,
-            maxWidth: GUTTER_W,
-          },
-        }
+      const imgs       = shuffle(Object.values(E))          // pick 3 random illustrations
+      const pairLeft   = Math.random() > 0.5                // 50/50 which side gets the pair
+      const pair       = pairLeft ? 'left' : 'right'
+      const solo       = pairLeft ? 'right' : 'left'
+
+      const topH  = 35 + Math.floor(Math.random() * 9)     // 35–43vh  ↘ sum ≤ 86 → gap ≥ 14
+      const botH  = 35 + Math.floor(Math.random() * 9)     // 35–43vh  ↗
+      const midTop = 28 + Math.floor(Math.random() * 24)   // 28–51vh  (vertical float)
+      const midH  = 40 + Math.floor(Math.random() * 19)    // 40–58vh
+
+      const rnd = () => ({
+        rotate:  +((Math.random() - 0.5) * 40).toFixed(1),
+        flip:    Math.random() > 0.5,
+        opacity: +(0.09 + Math.random() * 0.09).toFixed(2),
       })
+
+      return [
+        { src: imgs[0], ...rnd(), posStyle: { [pair]: 0, top: 0,              maxHeight:`${topH}vh`, maxWidth:GUTTER_W } },
+        { src: imgs[1], ...rnd(), posStyle: { [pair]: 0, bottom: 0,           maxHeight:`${botH}vh`, maxWidth:GUTTER_W } },
+        { src: imgs[2], ...rnd(), posStyle: { [solo]: 0, top:`${midTop}vh`,   maxHeight:`${midH}vh`, maxWidth:GUTTER_W } },
+      ]
     })
     return (
       <>
@@ -541,10 +548,8 @@
           position:'absolute', inset:0, width:'100%', height:'100%',
           objectFit:'cover', objectPosition:'center', zIndex:0, pointerEvents:'none',
         }} />
-        {/* Illustrations — left: mushroom, right: bird + lizard, all gutter-clamped */}
-        <Deco src={E.bird}     style={{ top:0,        right:0, maxWidth:GUTTER_W, maxHeight:'55vh' }} opacity={0.10} rotate={-15} />
-        <Deco src={E.mushroom} style={{ bottom:0,     left:0,  maxWidth:GUTTER_W, maxHeight:'75vh' }} opacity={0.10} rotate={8}  />
-        <Deco src={E.lizard}   style={{ bottom:'18%', right:0, maxWidth:GUTTER_W, maxHeight:'45vh' }} opacity={0.09} rotate={-8} />
+        {/* Same 3-illustration system as every other screen */}
+        <ScreenDecos />
 
         {isCross && (
           <div style={{ background:'#F5B800', padding:'8px 20px', display:'flex', justifyContent:'center', position:'relative', zIndex:5 }}>
