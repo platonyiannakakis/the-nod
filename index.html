@@ -173,30 +173,28 @@
     )
   }
 
-  // Width cap = gutter beside the centered 580px content column
-  const GUTTER_W = 'clamp(70px, calc(50vw - 310px), 500px)'
-
   // ── ScreenDecos: 3 illustrations per screen, Option A layout ─────────────
   //
   //  Each mount randomly picks ONE of two mirror configs:
   //    Config A  →  pair (top + bottom) on LEFT,  solo (mid) on RIGHT
   //    Config B  →  pair (top + bottom) on RIGHT, solo (mid) on LEFT
   //
-  //  Pair sizing: each ≤ 43vh, sum ≤ 86vh → guaranteed ≥ 14vh gap between them
-  //  Solo sizing: 40–58vh, floats in the middle third of its side
-  //  Width: GUTTER_W on both sides → can never reach the content column
+  //  Anchored 3vw from the edge (not touching screen edge), wide enough to
+  //  sit close to the text. Pair gap enforced: topH + botH ≤ 92vh.
   //
+  const DECO_W = 'clamp(200px, calc(50vw - 180px), 620px)'
+
   function ScreenDecos({ fixed = false }) {
     const [items] = useState(() => {
-      const imgs       = shuffle(Object.values(E))          // pick 3 random illustrations
-      const pairLeft   = Math.random() > 0.5                // 50/50 which side gets the pair
-      const pair       = pairLeft ? 'left' : 'right'
-      const solo       = pairLeft ? 'right' : 'left'
+      const imgs     = shuffle(Object.values(E))
+      const pairLeft = Math.random() > 0.5
+      const pair     = pairLeft ? 'left' : 'right'
+      const solo     = pairLeft ? 'right' : 'left'
 
-      const topH  = 35 + Math.floor(Math.random() * 9)     // 35–43vh  ↘ sum ≤ 86 → gap ≥ 14
-      const botH  = 35 + Math.floor(Math.random() * 9)     // 35–43vh  ↗
-      const midTop = 28 + Math.floor(Math.random() * 24)   // 28–51vh  (vertical float)
-      const midH  = 40 + Math.floor(Math.random() * 19)    // 40–58vh
+      const topH   = 38 + Math.floor(Math.random() * 11)                    // 38–48vh
+      const botH   = Math.min(38 + Math.floor(Math.random() * 11), 92 - topH) // sum ≤ 92 → gap ≥ 8
+      const midTop = 28 + Math.floor(Math.random() * 24)                    // 28–51vh
+      const midH   = 60 + Math.floor(Math.random() * 23)                    // 60–82vh
 
       const rnd = () => ({
         rotate:  +((Math.random() - 0.5) * 40).toFixed(1),
@@ -205,9 +203,9 @@
       })
 
       return [
-        { src: imgs[0], ...rnd(), posStyle: { [pair]: 0, top: 0,              maxHeight:`${topH}vh`, maxWidth:GUTTER_W } },
-        { src: imgs[1], ...rnd(), posStyle: { [pair]: 0, bottom: 0,           maxHeight:`${botH}vh`, maxWidth:GUTTER_W } },
-        { src: imgs[2], ...rnd(), posStyle: { [solo]: 0, top:`${midTop}vh`,   maxHeight:`${midH}vh`, maxWidth:GUTTER_W } },
+        { src: imgs[0], ...rnd(), posStyle: { [pair]: '3vw', top: 0,            maxHeight:`${topH}vh`, maxWidth:DECO_W } },
+        { src: imgs[1], ...rnd(), posStyle: { [pair]: '3vw', bottom: 0,         maxHeight:`${botH}vh`, maxWidth:DECO_W } },
+        { src: imgs[2], ...rnd(), posStyle: { [solo]: '3vw', top:`${midTop}vh`, maxHeight:`${midH}vh`, maxWidth:DECO_W } },
       ]
     })
     return (
