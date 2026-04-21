@@ -384,7 +384,7 @@
   // ══════════════════════════════════════════
   // START SCREEN
   // ══════════════════════════════════════════
-  function StartScreen({ onStart, loading }) {
+  function StartScreen({ onStart, loading, onLibrary, onLeaderboard }) {
     const [name,      setName]      = useState('')
     const [savedName, setSavedName] = useState('')
     const [savedDept, setSavedDept] = useState('')
@@ -432,7 +432,7 @@
         {returning && (
           <div style={{ background:'rgba(255,247,214,0.72)', borderRadius:20, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'space-between', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)' }}>
             <div>
-              <span style={{ fontWeight:600, color:'#1A1918', fontSize:'0.95rem' }}>Welcome back, {savedName} 👋</span>
+              <span style={{ fontWeight:600, color:'#1A1918', fontSize:'0.95rem', display:'flex', alignItems:'center', gap:6 }}>Welcome back, {savedName} <img src="ICONS/welcome back.png" alt="" style={{ width:22, height:22, objectFit:'contain', verticalAlign:'middle' }} /></span>
               {savedDept && (
                 <div style={{ display:'flex', alignItems:'center', gap:5, marginTop:3 }}>
                   <span style={{ width:7, height:7, borderRadius:'50%', background:getDept(savedDept).dot, display:'inline-block', flexShrink:0 }} />
@@ -459,16 +459,16 @@
         </form>
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
-          <div style={{ background:'rgba(255,255,255,0.55)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)' }}>
-              <div style={{ fontSize:'1.2rem', marginBottom:4 }}>📖</div>
-              <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>Words collected</div>
-              <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>{wordCount > 0 ? `${wordCount} terms seen` : 'your glossary'}</div>
-            </div>
-            <div style={{ background:'rgba(255,255,255,0.55)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)' }}>
-              <div style={{ fontSize:'1.2rem', marginBottom:4 }}>🏆</div>
-              <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>Leaderboard</div>
-              <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>company-wide</div>
-            </div>
+          <div onClick={onLibrary} style={{ background:'rgba(255,255,255,0.55)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', cursor:'pointer' }}>
+            <img src="ICONS/Glossary.png" alt="" style={{ width:28, height:28, objectFit:'contain', marginBottom:6, display:'block' }} />
+            <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>Words collected</div>
+            <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>{wordCount > 0 ? `${wordCount} terms seen` : 'your glossary'}</div>
+          </div>
+          <div onClick={onLeaderboard} style={{ background:'rgba(255,255,255,0.55)', borderRadius:20, padding:'14px', boxShadow:'0 2px 12px rgba(0,0,0,0.06)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', cursor:'pointer' }}>
+            <img src="ICONS/Leaderboard.png" alt="" style={{ width:28, height:28, objectFit:'contain', marginBottom:6, display:'block' }} />
+            <div style={{ fontWeight:600, fontSize:'0.82rem', color:'#1A1918' }}>Leaderboard</div>
+            <div style={{ fontSize:'0.72rem', color:'#8A8A88' }}>company-wide</div>
+          </div>
         </div>
 
         <div style={{ textAlign:'center', fontSize:'0.78rem', color:'rgba(26,25,24,0.4)' }}>
@@ -670,11 +670,11 @@
   function SummaryScreen({ playerName, score, totalQuestions, maxStreak, onLeaderboard, onPlayAgain, onLibrary }) {
     const correct  = Math.round(score / PTS_CORRECT)
     const accuracy = Math.round((correct / totalQuestions) * 100)
-    const { emoji, msg } =
-      accuracy >= 90 ? { emoji:'🏆', msg:"You're genuinely cross-functional." } :
-      accuracy >= 70 ? { emoji:'💪', msg:"Solid. A few gaps, but you're getting there." } :
-      accuracy >= 50 ? { emoji:'🤔', msg:'Some nodding happening. Keep playing.' } :
-                       { emoji:'😬', msg:"Classic NOD energy. That's what this is for." }
+    const { icon, msg } =
+      accuracy >= 90 ? { icon:'ICONS/Heart Eyes Icon.png',            msg:"You're genuinely cross-functional." } :
+      accuracy >= 70 ? { icon:'ICONS/Pixelated Smile Icon.png',       msg:"Solid. A few gaps, but you're getting there." } :
+      accuracy >= 50 ? { icon:'ICONS/Pixelated Icons and Symbols.png',msg:'Some nodding happening. Keep playing.' } :
+                       { icon:'ICONS/Pixelated Icon.png',             msg:"Classic NOD energy. That's what this is for." }
     return (
       <Screen>
         <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.2em', textTransform:'uppercase', color:'rgba(26,25,24,0.4)', marginBottom:4, marginTop:0 }}>Results for</p>
@@ -687,7 +687,7 @@
               <p style={{ fontSize:'clamp(3.5rem,9vw,5rem)', fontWeight:300, color:'#1A1918', lineHeight:1, margin:0 }}>{score}</p>
               <p style={{ fontSize:'0.8rem', color:'#8A8A88', marginTop:4, marginBottom:0 }}>points</p>
             </div>
-            <span style={{ fontSize:'2.5rem' }}>{emoji}</span>
+            <img src={icon} alt="" style={{ width:60, height:60, objectFit:'contain', flexShrink:0 }} />
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', paddingTop:16, borderTop:'1px solid rgba(0,0,0,0.07)', textAlign:'center' }}>
             {[{ val:`${correct}/${totalQuestions}`, label:'Correct' }, { val:maxStreak, label:'Best streak' }, { val:`${accuracy}%`, label:'Accuracy' }].map(({ val, label }, i) => (
@@ -1057,7 +1057,7 @@
 
     return (
       <div style={{ width:'100%', minHeight:'100dvh' }}>
-        {screen === 'start'       && <StartScreen     onStart={handleNameSubmit} loading={loading} />}
+        {screen === 'start'       && <StartScreen     onStart={handleNameSubmit} loading={loading} onLibrary={() => setScreen('library')} onLeaderboard={() => setScreen('leaderboard')} />}
         {screen === 'discipline'  && <DisciplineScreen onSelect={handleDisciplineSelect} />}
         {screen === 'playing'     && q && <ChallengeCard question={q} questionNumber={currentIndex+1} totalQuestions={QUESTIONS_PER_GAME} streak={streak} score={score} playerDept={playerDept} onAnswer={handleAnswer} />}
         {screen === 'feedback'    && q && <FeedbackScreen question={q} selectedAnswer={selectedAnswer} isCorrect={isCorrect} streak={streak} onNext={handleNext} isLast={currentIndex === questions.length-1} />}
