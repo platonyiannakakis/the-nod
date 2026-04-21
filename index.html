@@ -202,10 +202,11 @@
         opacity: +(0.09 + Math.random() * 0.09).toFixed(2),
       })
 
+      const botInset = `${10 + Math.floor(Math.random() * 8)}vw`  // 10–17vw — steps inward
       return [
-        { src: imgs[0], ...rnd(), posStyle: { [pair]: '3vw', top: 0,            maxHeight:`${topH}vh`, maxWidth:DECO_W } },
-        { src: imgs[1], ...rnd(), posStyle: { [pair]: '3vw', bottom: 0,         maxHeight:`${botH}vh`, maxWidth:DECO_W } },
-        { src: imgs[2], ...rnd(), posStyle: { [solo]: '3vw', top:`${midTop}vh`, maxHeight:`${midH}vh`, maxWidth:DECO_W } },
+        { src: imgs[0], ...rnd(), posStyle: { [pair]: '2vw',    top: 0,            maxHeight:`${topH}vh`, maxWidth:DECO_W } },
+        { src: imgs[1], ...rnd(), posStyle: { [pair]: botInset,  bottom: 0,         maxHeight:`${botH}vh`, maxWidth:DECO_W } },
+        { src: imgs[2], ...rnd(), posStyle: { [solo]: '3vw',    top:`${midTop}vh`, maxHeight:`${midH}vh`, maxWidth:DECO_W } },
       ]
     })
     return (
