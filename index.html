@@ -713,11 +713,7 @@
   // ══════════════════════════════════════════
   // LEADERBOARD
   // ══════════════════════════════════════════
-  const BALL = [
-    { bg:'radial-gradient(circle at 35% 32%,#FFE880,#F5B800 58%,#C88000 100%)', sh:'rgba(245,184,0,0.4)' },
-    { bg:'radial-gradient(circle at 35% 32%,#A0E0B0,#3DB870 58%,#208050 100%)', sh:'rgba(61,184,112,0.4)' },
-    { bg:'radial-gradient(circle at 35% 32%,#FFCCAA,#C87848 58%,#904828 100%)', sh:'rgba(200,120,72,0.4)' },
-  ]
+  const DISC = ['DICIPLINES/1.png', 'DICIPLINES/2.png', 'DICIPLINES/3.png']
 
   function LeaderboardScreen({ playerId, playerName, onPlayAgain }) {
     const [leaders, setLeaders] = useState([])
@@ -741,7 +737,7 @@
 
     // Podium order: 2nd | 1st | 3rd
     const podium = [1, 0, 2]
-    const bSize  = ['clamp(55px,8vw,90px)', 'clamp(70px,10vw,110px)', 'clamp(50px,7vw,80px)']
+    const bSize  = ['clamp(38px,5.6vw,63px)', 'clamp(49px,7vw,77px)', 'clamp(35px,4.9vw,56px)']
     const pH     = ['clamp(70px,10vw,110px)', 'clamp(100px,14vw,150px)', 'clamp(55px,8vw,90px)']
 
     return (
@@ -762,7 +758,7 @@
               return (
                 <div key={rank} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:5 }}>
                   <span style={{ fontSize:'0.78rem', fontWeight:600, fontStyle:'italic', color:'#1A1918' }}>{p.name}{isMe?' · you':''}</span>
-                  <div style={{ width:bSize[posIdx], height:bSize[posIdx], borderRadius:'50%', background:BALL[rank].bg, boxShadow:`0 8px 24px ${BALL[rank].sh}` }} />
+                  <img src={DISC[rank]} alt="" style={{ width:bSize[posIdx], height:bSize[posIdx], objectFit:'contain', display:'block' }} />
                   <span style={{ fontWeight:700, fontSize:'clamp(0.9rem,2vw,1.1rem)', color:'#1A1918' }}>{p.score}</span>
                   <div style={{ width:'100%', height:pH[posIdx], background:'rgba(255,255,255,0.55)', borderRadius:'10px 10px 0 0', display:'flex', alignItems:'flex-start', justifyContent:'center', paddingTop:8, backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)' }}>
                     <span style={{ fontSize:'1.1rem' }}>{rank===0?'🥇':rank===1?'🥈':'🥉'}</span>
